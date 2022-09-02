@@ -1,0 +1,63 @@
+@startuml
+' https://plantuml.com/fr/class-diagram
+title Analyse du domaine métier de Quizbe\n
+
+Object Scope {
+id
+name
+}
+
+Object Topic {
+id
+name
+}
+
+Object Response {
+id
+proposition
+feedback
+value
+}
+
+Object Rating <<association>>{
+id
+value
+}
+
+Object Question{
+id
+name
+sentence
+dateCreate
+datePublication
+designerName
+codesignerNames
+}
+
+Object User{
+id
+username
+email
+password
+valide
+...
+}
+
+Object Role {
+id
+name
+}
+
+
+User "*" -- "*" Role:"\t\t\t\t"
+User " *" - "*" Topic:"\t\t\tsubsribed"
+User "1 creator" - "*" Topic:"\t\t\t"
+Question "1" - "2..*" Response:"\t\t"
+Question "*" -- "1" Scope
+Question "*" -- "1" Topic
+Question "*" -- "1" User
+Rating "*" - "1" Question:"\t\t\t"
+Rating "*" -- "1" User
+Topic "1" -- "*" Scope
+
+@enduml

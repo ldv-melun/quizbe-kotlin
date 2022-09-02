@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+  <link rel="stylesheet" th:href="@{/css/signin-register.css}"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='admin')"/>
+
+<main class="text-center form-signin">
+
+  <form action="#"
+        th:action="@{/douser/updatepw}"
+        th:object="${passwordDto}"
+        method="post">
+    <label for="pw">Password</label>
+    <input type="password" th:field="${passwordDto.password}" required id="pw" placeholder="password">
+    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="validation-message"></p>
+    <br>
+    <label for="pw2">Re-Password</label>
+    <input type="password" th:field="${passwordDto.confirmPassword}" required id="pw2" placeholder="password">
+    <p th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="validation-message"></p>
+    <input type="submit" value="Update Password">
+  </form>
+</main>
+<div th:replace="fragments/footer.html :: footer"/>
+</body>
+</html>

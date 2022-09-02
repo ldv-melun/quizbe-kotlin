@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='question')"/>
+<main class="container">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+
+      <h3 th:if="${questionDto.id}==null" class="panel-title" style="text-align: center" th:text="#{question.add}"></h3>
+      <h3 th:if="${questionDto.id}!=null" class="panel-title" style="text-align: center" th:text="#{question.update}"></h3>
+
+    </div>
+    <div class="panel-body">
+      <form name="questionDto" method="post" th:action="@{/question/addupdate}" action="#" class=""
+            th:object="${questionDto}">
+        <input type="hidden" th:field="${questionDto.id}">
+        <input type="hidden" th:field="${questionDto.topic}">
+        <input type="hidden" th:field="${questionDto.designer}">
+        <div class="row g-3">
+          <div class="col-auto">
+            <label class="form-label" th:text="#{name}"
+                   for="question_name">Name:</label>
+            <input type="text" id="question_name" th:field="${questionDto.name}" required="required"
+                   maxlength="50" class="form-control" placeholder="short name"/>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validation-message"></span>
+          </div>
+          <div class="col-auto">
+            <label class="form-label" for="question_codesigners" th:text="#{scope.codesigners}">Co-Designer(s):</label>
+            <input type="text" th:field="${questionDto.codesigners}" id="question_codesigners"
+                   maxlength="255" class="form-control" placeholder="co-author(s) and Co"/>
+            <span th:if="${#fields.hasErrors('codesigners')}" th:errors="*{codesigners}"
+                  class="validation-message"></span>
+          </div>
+          <div class="col-auto">
+            <label class="form-label required"
+                   for="question_scope" th:text="#{scope}">Scope</label>
+            <span th:if="${#fields.hasErrors('idScope')}" th:errors="*{idScope}"
+                  class="validation-message"></span>
+            <select id="question_scope" th:field="${questionDto.idScope}" class="form-control">
+              <option th:each="scope : ${questionDto.topic.scopes}" th:text="${scope.name}"
+                      value="42" th:value="${scope.id}"
+                      th:selected="${questionDto.idScope != null  ? scope.id == questionDto.idScope : false}">
+              </option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <label class="form-label required" for="question_topic" th:text="#{topic}">Topic:</label>
+            <input type="text" id="question_topic"
+                   maxlength="255" class="form-control" readonly th:value="${questionDto.topic.name}"/>
+          </div>
+
+        </div>
+        <div class="row mt-3">
+          <div class="col-auto">
+
+            <label class="form-check-label" for="question_doPublish" th:text="#{question.visible}"></label>
+            <input class="form-check-input" type="checkbox" id="question_doPublish"
+                   th:field="${questionDto.visible}" th:checked="${questionDto.visible}"/>
+
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-12">
+            <label class="form-label required" for="question_sentence" th:text="#{question}">Question:</label>
+            <textarea id="question_sentence" class="form-control" th:field="${questionDto.sentence}"></textarea>
+            <span th:if="${#fields.hasErrors('sentence')}" th:errors="*{sentence}"
+                  class="validation-message"></span>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-2">
+            <label class="control-label col-sm-2 required" th:text="#{answers}">Answers:</label>
+            <p th:if="${#fields.hasErrors('responseDtos')}" th:errors="*{responseDtos}"
+                  class="validation-message"></p>
+          </div>
+          <div class="col-10">
+              <ul style="list-style-type: none;" id="question-responses">
+                <li th:each="response,iterStat : ${questionDto.responseDtos}">
+                  <div th:replace="fragments/add-response (indice=${iterStat.index})"/>
+                </li>
+              </ul>
+          </div>
+        </div>
+        <div hidden class="form-group">
+          <div id="id-prototype-response-form">
+            <div th:replace="fragments/add-response(indice=0)"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-10">
+                <a href="" th:text="#{answer.create}" id="add-a-response" class="btn btn-link btn-sm" role="button">
+                  Add a new response
+                </a>
+                <button type="submit" class="m-3 btn btn-primary btn-block" th:text="#{submit}">Ajouter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+      <hr/>
+      <div>
+        <div class="form-group col-sm-2 control-label">
+        </div>
+        <div class="form-group col-sm-2 control-label">
+          <div style="margin-top: 5px;">
+            <a th:href="@{'/question?id-selected-topic='+${questionDto.topic.id}+'&id-selected-scope='+${questionDto.idScope}}" th:text="#{back.to.list}"></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+
+<script th:inline="javascript">
+  // Récupère le div qui contient la collection de scopes
+  var listResponses = document.getElementById('question-responses');
+  var fragment;
+
+  window.addEventListener("DOMContentLoaded", (event) => {
+    ///  extract prototype into a fragment ///
+    // output prototype hidden element of form (else it is submitted !)
+    let prototypeElt = document.getElementById("id-prototype-response-form");
+    // delete id input (first input)
+    let firstInput = prototypeElt.getElementsByTagName('input')[0];
+    let inputs = prototypeElt.getElementsByTagName("input");
+    for (let i = 0; i < inputs.length; i++) {
+      inputs[i].setAttribute("value", "");
+    }
+
+    firstInput.remove();
+    fragment = document.createDocumentFragment();
+    // move prototype elt into fragment
+    fragment.appendChild(prototypeElt);
+    /// end  extract prototype into a fragment ///
+
+    // ajoute un lien de suppression à tous les éléments li de
+    // formulaires des scopes existants
+    window.nbResponseItems= 0;
+    if (listResponses != null) {
+      let responsesFormLis = listResponses.getElementsByTagName('li');
+      for (let i = 0; i < responsesFormLis.length; i++) {
+        addEventDeleteOnDeleteLink(responsesFormLis[i]);
+      }
+      window.nbResponseItems = responsesFormLis.length;
+    }
+
+    let addLink = document.getElementById('add-a-response');
+    addLink.onclick = function (e) {
+      // empêche le lien de créer un « # » dans l'URL
+      e.preventDefault();
+      // ajoute un nouveau formulaire de scope
+      addResponseForm();
+    };
+  });
+
+
+  function addResponseForm() {
+    let prototype = fragment.getElementById("id-prototype-response-form").innerHTML;
+    // Remplace l'indice 'O' dans le HTML du prototype par un nombre basé sur nbScopeItems
+    let newForm = prototype.replace('[/0/g', '['+window.nbResponseItems++);
+    // creation d'un nouvel li dans le formulaire
+    let liElt = document.createElement('li');
+    liElt.innerHTML = newForm;
+    listResponses.appendChild(liElt);
+    reorderEltsIndexArray();
+    addEventDeleteOnDeleteLink(liElt);
+  }
+
+  function addEventDeleteOnDeleteLink(responseFormLi) {
+    let scopeDelete = responseFormLi.getElementsByClassName("response-delete");
+    // one item <a> class "scope-delete" by li
+    scopeDelete[0].onclick = function (e) {
+      // empêche le lien de créer un « # » dans l'URL
+      e.preventDefault();
+      // supprime l'élément li (scope)
+      listResponses.removeChild(responseFormLi);
+
+      // appel reorderEltsIndexArray pour impact avant submit
+      reorderEltsIndexArray();
+    };
+  }
+
+  //  TODO duplicate function (topic add-update)
+  // compact reorder array index
+  function reorderEltsIndexArray() {
+    let lis = listResponses.getElementsByTagName("li");
+    //console.log("lis.length = " + lis.length);
+    for (let i = 0; i < lis.length; i++) {
+      let inputReorders = lis[i].getElementsByClassName("input-reorder");
+      for (let j = 0; j < inputReorders.length; j++) {
+        updateIndice(inputReorders[j], 'name', i);
+        updateIndice(inputReorders[j], 'id', i);
+      }
+      let labels = lis[i].getElementsByTagName("label");
+      for (let j = 0; j < labels.length; j++) {
+        updateIndice(labels[j], 'for', i);
+      }
+    }
+  }
+  // ex:  for='responseDtos[x].proposition' => for='responseDtos[y].proposition'
+  function updateIndice(elt, attributName, i) {
+    let attribut = elt.getAttribute(attributName);
+    left = attribut.substring(0, attribut.indexOf('[') +1 ) + i;
+    right= attribut.substr(attribut.indexOf(']'));
+    attribut = left + right;
+    elt.setAttribute(attributName,attribut);
+  }
+
+</script>
+
+</body>
+</html>

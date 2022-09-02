@@ -1,0 +1,92 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:fragment="header-css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" th:href="@{/apple-touch-icon.png}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+
+    <title th:text="${title ?: 'QuizBe'}"></title>
+
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}"
+          rel="stylesheet">
+    <link href="/webjars/font-awesome/5.15.4/css/all.min.css"
+          th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}"
+          rel="stylesheet">
+
+    <!-- Custom styles for application -->
+    <link rel="stylesheet" th:href="@{/css/quizbe.css}"/>
+
+  </th:block>
+</head>
+<body>
+<!--https://getbootstrap.com/docs/5.0/examples/navbar-static/-->
+<div th:fragment="menu">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a href="/">
+        <button style="width: 60px; height: 60px; background: white;
+    border: none !important; border-radius: 100px;">
+          <img th:src="@{/svg/quizbe.svg}" style="width: 60px; height: 50px; padding:7px;"/>
+        </button>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul sec:authorize="hasAuthority('CHANGE_PW')" class="navbar-nav me-auto mb-2 mb-md-0 p-2">
+          <li class="nav-item">
+            <a class="nav-link" href="/douser/updatepw">Update Password</a>
+          </li>
+        </ul>
+        <ul sec:authorize="hasAuthority('CHANGE_PW') == false" class="navbar-nav me-auto mb-2 mb-md-0 p-2">
+          <li class="nav-item" th:class="${activeTab == 'question' ? 'active' : null}">
+            <a class="nav-link" href="/question">Quiz</a>
+          </li>
+          <li sec:authorize="isAuthenticated()" class="nav-item"
+              th:class="${activeTab == 'subscribedTopics' ? 'active' : null}">
+            <a class="nav-link" href="/topic/subscribed" th:text="#{topics.subscribed}">Subscribed classrooms</a>
+          </li>
+          <li sec:authorize="hasAuthority('TEACHER')" class="nav-item"
+              th:class="${activeTab == 'topic' ? 'active' : null}">
+            <a class="nav-link" href="/topic" th:text="#{topics.my}">Classrooms</a>
+          </li>
+          <li sec:authorize="hasAuthority('ADMIN')" class="nav-item"
+              th:class="${activeTab == 'admin' ? 'active' : null}">
+            <a class="nav-link" th:href="@{/admin/users}">Admin</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <!--        <li> <span class="nav-link" th:text="${'>' + #request.requestURI} + '<'"></span> <a th:href="@{'/changelocale/?lang=us&url=' + ${#request.requestURI}}">LocaleUS</a> </li>-->
+          <!--        <li> <span class="nav-link" th:text="${'>' + #request.requestURI} + '<'"></span> <a th:href="@{'/changelocale/?lang=fr&url=' + ${#request.requestURI}}">LocaleFR</a> </li>-->
+          <li sec:authorize="isAuthenticated()" class="nav-link">
+            <!--        <li class="fas fa-sign-out-alt nav-link">-->
+            <!--          <span class="nav-link">-->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-box-arrow-left"
+                 viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
+              <path fill-rule="evenodd"
+                    d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+            </svg>
+            <a style="color: rgba(255,255,255,.55);" th:href="@{/logout}">&nbsp;Logout </a> (<a
+                  th:href="@{/user/edit/}"><span th:text="${#authentication.getPrincipal().getUsername()}"></span></a>)
+            <!--          <a style="color: rgba(255,255,255,.55);" th:href="@{/logout}">&nbsp;Logout </a> (<span th:text="${#authentication.getPrincipal().getUsername()}"></span>)-->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div>
+    <p th:if="${errorMessage != null}" th:text="#{${errorMessage}}" class="alert alert-danger"></p>
+    <p th:if="${successMessage != null}" th:text="#{${successMessage}}" class="alert alert-success"></p>
+  </div>
+</div>
+</body>
+</html>

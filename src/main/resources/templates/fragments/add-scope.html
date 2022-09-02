@@ -1,0 +1,12 @@
+<div th:fragment="add-scope (indice)" >
+    <div class="mb-4">
+        <input type="hidden" th:field="*{scopesDtos[__${indice}__].id}" class="id-hidden input-reorder">
+        <label th:for="'scopesDtos[__${indice}__].name'" th:text="#{scope}"
+               class="form-label">Scope</label> &nbsp;
+        <a class="scope-delete" href="#" th:text="#{delete}">delete</a>
+        <input type="text" th:field="*{scopesDtos[__${indice}__].name}"
+               placeholder="scope" class="form-control input-reorder" th:id="'scopesDtos[__${indice}__].name'"/>
+        <p th:if="${#fields.hasErrors('scopesDtos[__${indice}__].name')}" th:errors="*{scopesDtos[__${indice}__].name}"
+           class="validation-message"></p>
+    </div>
+</div>

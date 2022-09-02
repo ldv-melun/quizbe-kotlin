@@ -1,0 +1,40 @@
+<div th:fragment="add-response(indice)">
+  <div class="row g-3">
+    <input type="hidden" th:field="*{responseDtos[__${indice}__].id}" class="id-hidden input-reorder">
+    <div th:class="col-10">
+      <label class="form-label required" th:for="'responseDtos[__${indice}__].proposition'"> proposition: </label>
+      <a class="response-delete" href="#" th:text="#{delete}">delete</a>
+      <textarea class="form-control input-reorder" th:field="*{responseDtos[__${indice}__].proposition}" required="required"
+                th:id="'responseDtos[__${indice}__].proposition'">
+            </textarea>
+      <p th:if="${#fields.hasErrors('responseDtos[__${indice}__].proposition')}"
+         th:errors="*{responseDtos[__${indice}__].proposition}"
+         class="validation-message"></p>
+    </div>
+    <div class="col-2">
+      <label class="form-label required" th:for="'responseDtos[__${indice}__].value'">Value:</label>
+      <p th:if="${#fields.hasErrors('responseDtos[__${indice}__].value')}"
+         th:errors="*{responseDtos[__${indice}__].value}"
+         class="validation-message"></p>
+      <select th:id="'responseDtos[__${indice}__].value'" th:field="*{responseDtos[__${indice}__].value}" class="form-control input-reorder">
+        <option value="-2">-2</option>
+        <option value="-1">-1</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <label class="form-label required" th:for="'responseDtos[__${indice}__].feedback'">feedback:</label>
+
+        <textarea th:id="'responseDtos[__${indice}__].feedback'"  th:field="*{responseDtos[__${indice}__].feedback}"
+                  required class="form-control input-reorder">
+        </textarea>
+        <p th:if="${#fields.hasErrors('responseDtos[__${indice}__].feedback')}"
+           th:errors="*{responseDtos[__${indice}__].feedback}"
+           class="validation-message"></p>
+      </div>
+    </div>
+    <hr>
+  </div>
+</div>

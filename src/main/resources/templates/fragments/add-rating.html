@@ -1,0 +1,36 @@
+<div th:fragment="add-rating(rating, indice)">
+  <h2 th:text="${rating.id}"></h2>
+  <form th:action="@{'/question/userrate/' + ${rating.question.id}}" th:object="${rating}">
+    <input type="hidden" name="goto"
+           th:value="'/question?id-selected-topic='+${rating.question.topic.id}+'&id-selected-scope='+${rating.question.scope.id}"
+           \>
+    <div class="row g-3">
+      <input type="hidden" th:field="*{rating.id}" class="id-hidden input-reorder">
+      <div th:class="col-10">
+        <label class="form-label required" th:for="__${indice}__.comment'"> comment: </label>
+        <a class="response-delete" href="#" th:text="#{delete}">delete</a>
+        <textarea class="form-control input-reorder" th:field="*{rating.comment}" required="required"
+                  th:id="'__${indice}__.comment'">
+            </textarea>
+        <p th:if="${#fields.hasErrors('rating.comment')}"
+           th:errors="${rating.comment}"
+           class="validation-message"></p>
+      </div>
+      <div class="col-2">
+        <label class="form-label required" th:for="'rating.value'">Value:</label>
+        <p th:if="${#fields.hasErrors('rating.value')}"
+           th:errors="*{rating.value}"
+           class="validation-message"></p>
+        <select th:id="'rating.value'" th:field="${rating.value}" class="form-control input-reorder">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <input type="submit"/>
+      </div>
+      <hr>
+    </div>
+  </form>
+</div>

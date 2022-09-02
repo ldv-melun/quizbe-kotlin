@@ -1,0 +1,20 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: menu(activeTab='home')"/>
+
+<main role="main">
+   <div class="container d-flex justify-content-center">
+            <h3>TODO !</h3>
+    </div>
+</main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+
+</body>
+</html>

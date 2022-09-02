@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='question')"/>
+<main class="container">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="panel-title d-flex justify-content-between bd-highlight mb-3">
+        <div class="p-2 bd-highlight" th:text="${question.designer} + '~' + ${question.codesigner}"></div>
+        <div class="p-2 bd-highlight" th:text="${question.name}"></div>
+        <div class="p-2 bd-highlight" th:text="${question.topic.name + ' ~ ' +  question.scope.name}"></div>
+      </h4>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <div>
+          <label for="sentence" class="form-label">Question</label>
+          <textarea class="sentence form-control" id="sentence" rows="5" readonly th:text="${question.sentence}">
+          </textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <table class="table table-striped">
+          <thead>
+          <th th:with="expectedGoodResponses=${question.getExpectedGoodChoices}">Your choice
+            <span th:if="${expectedGoodResponses} > 0 and ${expectedGoodResponses} < ${#lists.size(question.responses)}"
+                  th:text="' (' + ${expectedGoodResponses} + ' expected)'"
+            >
+
+            </span>
+            <!--            if (expectedChoices > 0 and expectedChoices < question.responses.length-->
+          </th>
+          <th>Proposition</th>
+          <th>
+            <a onclick="hideShowValues();"> Value </a>
+            <!-- 'watchValue' = temoin de visibilité de la colonne (c'est une astuce, voir hideShowValues() ) -->
+            <span id='watchValue' hidden=true class="itemValue"></span>
+          </th>
+          </thead>
+          <tbody>
+          <tr th:each="resp, iter : ${question.responses}">
+            <td>
+              <input th:id="${'c' + resp.id}" class="userChoice"
+                     type="checkbox" onClick='onUserChoice()'/>
+              <label th:id="${'f' + resp.id}" class="feedback" hidden="true" style='font-style: italic; display: none'
+                     th:text="'&#45;&#45;' +${resp.feedback}"> </label>
+            </td>
+            <td th:text="${resp.proposition}"></td>
+            <td>
+              <label>
+                <span th:id="${'v' + resp.id}" class="itemValue" style='display: none' th:text="${resp.value}"></span>
+                &nbsp;
+              </label>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="panel-title d-flex justify-content-between bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+          <a id='idGoodChoice' style="display: none"
+             class="m-1 btn btn-success fa-thumbs-up fas" onclick="showFeedBack();"
+             th:text="'   ' + #{play.good.user.submit.choice}">
+            play.good.user.submit.choice</a>
+          <a id='idBadChoice' style="display:none"
+             class="m-1 btn btn-danger fa-thumbs-down fas " onclick="showFeedBack();"
+             th:text="'   ' + #{play.bad.user.submit.choice}">
+            play.bad.user.submit.choice </a>
+          <a id='idFeedBack' style="display:none"
+             class="m-1 btn btn-primary" onclick="showFeedBack();" th:text="#{play.show.feedback}"></a>
+        </div>
+        <div class="p-2 bd-highlight"></div>
+        <div class="p-2 bd-highlight">
+          <a class="btn btn-success" onclick="checkUserChoice();" th:text="#{play.user.check}"> === user.check === </a>
+          &nbsp;<a th:if="${question.designer == #authentication.getPrincipal().getUsername()}"
+                   th:href="@{'/question/edit/' + ${question.id}}"
+                   class="btn btn-link"
+                   th:text="#{edit}">
+          edit if current user is designer
+        </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  <div class="row">-->
+  <!--    <div class="col-sm-6">-->
+  <!--    </div>-->
+  <!--    <div class="col-sm-6" style="margin-top: 1em">-->
+  <!--      <spam class="pull-right" style="font-size: medium">-->
+
+  <!--        {% if first != false %}-->
+  <!--        <a href="{{ path('question_show', { 'id': first }) }}">|&lt;</a>&nbsp;-->
+  <!--        {% else %}-->
+  <!--        |&lt;-->
+  <!--        {% endif %}-->
+  <!--        {% if prev != false %}-->
+  <!--        <a href="{{ path('question_show', { 'id': prev }) }}">&lt;</a>&nbsp;-->
+  <!--        {% else %}-->
+  <!--        &lt;-->
+  <!--        {% endif %}-->
+  <!--        {% if next != false %}-->
+  <!--        <a href="{{ path('question_show', { 'id': next }) }}">&gt;</a>&nbsp;-->
+  <!--        {% else %}-->
+  <!--        &gt;-->
+  <!--        {% endif %}-->
+  <!--        {% if last != false %}-->
+  <!--        <a href="{{ path('question_show', { 'id': last }) }}">&gt;|</a>&nbsp;-->
+  <!--        {% else %}-->
+  <!--        &gt;|-->
+  <!--        {% endif %}-->
+  <!--      </spam>-->
+  <!--    </div>-->
+  <!--  </div>-->
+
+  <div class="container d-flex justify-content-left mt-5 mb-3 text-muted">
+    <form th:if="${question.designer != #authentication.getPrincipal().getUsername()}"
+          th:action="@{'/question/play/' + ${question.id}}" method="post" class="col-7" th:object="${ratingDto}">
+      <input type="hidden" name="goto"
+             th:value="'/question?id-selected-topic='+${question.topic.id}+'&id-selected-scope='+${question.scope.id}"
+             \>
+      <input type="hidden" th:value="${ratingDto.id ?: null}" name="id-rating" class="id-hidden input-reorder">
+      <label class="form-label" for="current_comment" th:text="#{play.user.rating}">Your rating :&nbsp;</label>
+      <textarea class="form-control input-reorder" id="current_comment" name="comment"
+                th:text="${ratingDto.comment ?: ''}">
+      </textarea>
+      <p th:if="${#fields.hasErrors('comment')}"
+         class="validation-message" th:errors="*{comment}">Incorrect comment</p>
+
+      <div class="form-control justify-content-between align-items-center">
+        <div class="ratings">
+          <i class="fa fa-star" th:classappend="${ratingDto.value >= 1} ? 'rating-color'"></i>
+          <i class="fa fa-star" th:classappend="${ratingDto.value >= 2} ? 'rating-color'"></i>
+          <i class="fa fa-star" th:classappend="${ratingDto.value >= 3} ? 'rating-color'"></i>
+          <i class="fa fa-star" th:classappend="${ratingDto.value >= 4} ? 'rating-color'"></i>
+          <i th:if="${ratingDto.value >= 5}" class="fa fa-smile-beam rating-color"></i>
+          <i th:if="${ratingDto.value < 5}" class="fa fa-star"></i>
+          <i th:if="${ratingDto.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
+            <span style="font-size: 16px">&nbsp;(</span>
+            <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
+                  th:text="#{obsolete}"></span>
+            <span style="font-size: 16px">)</span>
+          </i>
+        </div>
+        <select name="value" class="d-inline-block">
+          <option th:if="${ratingDto.value == null}" disabled="true" selected="selected" value="">Select</option>
+          <option value="1" th:selected="${ratingDto.value==1}">1</option>
+          <option value="2" th:selected="${ratingDto.value==2}">2</option>
+          <option value="3" th:selected="${ratingDto.value==3}">3</option>
+          <option value="4" th:selected="${ratingDto.value==4}">4</option>
+          <option value="5" th:selected="${ratingDto.value==5}">5</option>
+        </select>
+        <p th:if="${#fields.hasErrors('value')}"
+           class="validation-message" th:errors="*{value}">Incorrect value</p>
+        <div class="mt-1">
+          <button th:if="${userRating.id == null}" class="btn btn-primary" type="submit" th:text="#{create}">create
+          </button>
+          <button th:if="${userRating.id != null}" class="btn btn-primary" type="submit" th:text="#{update}">update
+          </button>
+
+          <a th:if="${userRating.id != null}" th:href="@{'/question/deleterating/' + ${question.id}}"
+             th:text="#{delete}">delete</a>
+        </div>
+    </form>
+
+  </div>
+  </div>
+  <div class="container d-flex justify-content-center mt-5 mb-3 text-muted">
+    <a th:href="@{'/question?id-selected-topic='+${question.topic.id}+'&id-selected-scope='+${question.scope.id}}"
+       th:text="#{back.to.list}"></a>
+    <span>&nbsp;&nbsp; << &nbsp;&nbsp;  >> </span>
+  </div>
+
+  <div class="col-7 mb-3">
+    <ul style="list-style-type: none;" id="question-responses">
+      <li th:each="rating,iterStat : ${question.ratings}" class="pb-1">
+        <div class="mb-2" th:if="${ratingDto.id != rating.id}">
+<!--          other ratings (mode admin)-->
+          <form sec:authorize="hasAuthority('ADMIN')" th:action="@{'/question/userrate/' + ${question.id}}"
+                method="post" th:object="${question}">
+
+            <input type="hidden" th:value="${rating.id}" name="id-rating" class="id-hidden input-reorder">
+            <input type="hidden" th:value="${rating.value}" name="value" class="id-hidden">
+
+            <div>
+              <label th:for="'comment' + ${iterStat.index}" th:text="${rating.user.username}">&nbsp;</label>
+              <i th:if="${rating.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
+                <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
+                      th:text="#{obsolete}">&nbsp;&nbsp;&nbsp;</span>
+              </i>
+
+              <i th:if="${rating.outDated == false}" class="fa fa-star"
+                 th:classappend="${rating.value >= 1} ? 'rating-color'"></i>
+              <i th:if="${rating.outDated == false}" class="fa fa-star"
+                 th:classappend="${rating.value >= 2} ? 'rating-color'"></i>
+              <i th:if="${rating.outDated == false}" class="fa fa-star"
+                 th:classappend="${rating.value >= 3} ? 'rating-color'"></i>
+              <i th:if="${rating.outDated == false}" class="fa fa-star"
+                 th:classappend="${rating.value >= 4} ? 'rating-color'"></i>
+              <i th:if="${rating.outDated == false and rating.value >= 5}" class="fa fa-smile-beam rating-color"></i>
+              <i th:if="${rating.outDated == false and rating.value < 5}" class="fa fa-star"></i>
+            </div>
+            <textarea class="form-control input-reorder" th:id="'comment' + ${iterStat.index}" name="comment"
+                      th:text="${rating.comment}">
+            </textarea>
+            <div class="mt-2">
+              <button class="btn btn-primary btn-sm" type="submit" th:text="#{update}">update submit</button>
+            </div>
+          </form>
+        </div>
+<!--        other ratings-->
+        <div th:if="${ratingDto.id != rating.id and #authorization.expression('hasAuthority(''ADMIN'')') == false}">
+          <div>
+            <label th:for="'comment' + ${iterStat.index}" th:text="${rating.user.username}">:&nbsp;</label>
+            <i th:if="${rating.outDated == false}" class="fa fa-star"
+               th:classappend="${rating.value >= 1} ? 'rating-color'"></i>
+            <i th:if="${rating.outDated == false}" class="fa fa-star"
+               th:classappend="${rating.value >= 2} ? 'rating-color'"></i>
+            <i th:if="${rating.outDated == false}" class="fa fa-star"
+               th:classappend="${rating.value >= 3} ? 'rating-color'"></i>
+            <i th:if="${rating.outDated == false}" class="fa fa-star"
+               th:classappend="${rating.value >= 4} ? 'rating-color'"></i>
+            <i th:if="${rating.outDated == false and rating.value >= 5}" class="fa fa-smile-beam rating-color"></i>
+            <i th:if="${rating.outDated == false and rating.value < 5}" class="fa fa-star"></i>
+            <i th:if="${rating.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
+              <span style="font-size: 16px">&nbsp;(</span>
+              <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
+                    th:text="#{obsolete}"></span>
+              <span style="font-size: 16px">)</span>
+            </i>
+          </div>
+          <textarea th:if="${#authorization.expression('hasAuthority(''ADMIN'')') == false }"
+                    class="form-control input-reorder" readonly th:id="'comment' + ${iterStat.index}" name="comment"
+                    th:text="${rating.comment}">
+            </textarea>
+        </div>
+      </li>
+    </ul>
+  </div>
+</main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+
+<script th:inline="javascript">
+  function checkUserChoice() {
+    let res = 0.0;
+    let elts = document.getElementsByClassName("userChoice");
+    let i;
+    for (i = 0; i < elts.length; i++) {
+      if (elts[i].checked == true) {
+        let idValue = "v" + elts[i].id.substring(1);
+        res = res + parseFloat(document.getElementById(idValue).innerHTML);
+      }
+    }
+    document.getElementById('idFeedBack').hidden = true;
+    // $('#idFeedBack').hide();
+    /*<![CDATA[*/
+    let nbGoodChoice = [[${question.getExpectedGoodChoices}]];
+    /*]]>*/
+    console.log("nbGoodChoice : " + nbGoodChoice + "res = " + res);
+    if (res == nbGoodChoice) {
+      hide('idBadChoice');
+      show('idGoodChoice');
+    } else {
+      show('idBadChoice');
+      hide('idGoodChoice');
+    }
+    show('idFeedBack');
+  }
+
+  function hideShowValues() {
+    let elts = document.getElementsByClassName("itemValue");
+    if (document.getElementById('watchValue').hidden == false) {
+      for (let i = 0; i < elts.length; i++) {
+        elts[i].hidden = true;
+        elts[i].style = "display: none";
+      }
+    } else {
+      for (let i = 0; i < elts.length; i++) {
+        elts[i].hidden = false;
+        elts[i].style = "display: inline";
+      }
+    }
+  }
+
+  function showFeedBack() {
+    let elts = document.getElementsByClassName("feedback");
+    if (elts[0].hidden == true || elts[0].hidden == undefined) {
+      for (let i = 0; i < elts.length; i++) {
+        elts[i].hidden = false;
+        elts[i].setAttribute("style", "display: inline-block");
+      }
+    } else {
+      for (let i = 0; i < elts.length; i++) {
+        elts[i].setAttribute("style", "display: none");
+        elts[i].hidden = true;
+      }
+    }
+  }
+
+  function hideResultCheckChoice() {
+    hide('idGoodChoice');
+    hide('idBadChoice');
+  }
+
+  function onUserChoice() {
+    hideResultCheckChoice();
+  }
+
+  function show(eltName) {
+    document.getElementById(eltName).hidden = false;
+    document.getElementById(eltName).style = "display: inline";
+  }
+
+  function hide(eltName) {
+    document.getElementById(eltName).hidden = true;
+    document.getElementById(eltName).style = "display: none";
+  }
+
+
+</script>
+
+</body>
+</html>

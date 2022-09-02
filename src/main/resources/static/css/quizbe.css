@@ -1,0 +1,109 @@
+/* Question index */
+
+.private {
+    border-style: dashed;
+    border-left-width: thin;
+    border-top-style: none;
+    border-right-style: none;
+    border-bottom-style: none;
+    /* background-color: #008000; */
+
+}
+
+.private::before {
+    content: "(*) ";
+}
+
+/* Question show */
+
+div.sentence {
+    background-color: #b2dba1;
+    padding-right: 15px;
+    padding-left: 15px;
+    border-color: #e7e7e7;
+    border-radius: 5px;
+}
+
+tr.response {
+
+}
+
+div.sentence pre {
+    background-color: inherit;
+    border: none
+}
+
+.itemValue {
+    display: none;
+}
+
+.feedBack {
+    display: none;
+}
+
+ul.items_prototype li {
+    list-style-type: none;
+}
+
+/* https://bbbootstrap.com/snippets/bootstrap-5-products-star-ratings-details-73963678 */
+
+.ratings {
+    margin-right: 10px;
+}
+
+.ratings i {
+    color: #cecece;
+    font-size: 32px;
+}
+
+@media screen and (max-width: 1200px) {
+
+    .ratings i {
+        font-size: 24px;
+    }
+
+}
+
+.rating-color {
+    color: #fbc634 !important;
+}
+
+.warning-color {
+    color: red !important;
+}
+
+.small-ratings i {
+    color: #cecece;
+}
+
+/* https://stackoverflow.com/questions/7117073/add-a-tooltip-to-a-div */
+.visible {
+    height: 3em;
+    width: 10em;
+    background: yellow;
+}
+
+/* redefine from bootstrap (Question) */
+code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #000000;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+}
+
+.active {
+    border-bottom-color: lightgray;
+    border-bottom-style: solid;
+}
+
+.validation-message {
+    border-style: none;
+    color: red;
+}
+
+/* applique la couleur utilisée par .nav-link.  Voir header logout */
+.color-nav-link a {
+    color: rgba(255, 255, 255, .55);
+}
+

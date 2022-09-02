@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" th:href="@{css/signin-register.css}" type="stylesheet"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='topic')"/>
+
+<main class="mx-auto" style="width: 350px;">
+  <div class="card">
+    <div class="card-header">
+      <p th:if="${topicDto.id}==null" style="text-align: center" th:text="#{topic.add}"></p>
+      <p th:if="${topicDto.id} != null" style="text-align: center" th:text="#{topic.update}"></p>
+    </div>
+
+    <div class="card-body">
+      <form action="#" _onsubmit="topicCompactArray()" th:action="@{/topic/addupdate}" th:object="${topicDto}"
+            method="post">
+        <input type="hidden" th:field="${topicDto.id}">
+        <input type="hidden" th:field="${topicDto.visible}">
+        <input type="hidden" th:field="${topicDto.creatorUsername}">
+        <div class="mb-4">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" th:field="*{name}" id="name" placeholder="name" class="form-control">
+          <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validation-message"></span>
+        </div>
+        <hr>
+        <p style="text-align: center" th:text="#{scope.manage}"></p>
+        <div id="div-scopes" th:unless="${#lists.isEmpty(topicDto.scopesDtos)}">
+          <ul class="items_prototype" id="topic_items" style="list-style-type: none;">
+            <li th:each="scope,iterStat : ${topicDto.scopesDtos}">
+              <div th:replace="fragments/add-scope (indice=${iterStat.index})"/>
+            </li>
+          </ul>
+        </div>
+        <div hidden id="id-prototype-scope-form">
+          <div th:replace="fragments/add-scope (indice=0)"/>
+        </div>
+        <p><a href="" th:text="#{scope.add.one}" id="add-a-scope"></a></p>
+        <hr>
+        <div class="mb-4">
+          <span class="p-1"><a th:href="@{/topic}" th:text="#{return.to.list}">Retour</a></span>
+          <button type="submit" class="btn btn-primary btn-block" th:text="#{submit}">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+
+<script th:inline="javascript">
+  // Récupère le div qui contient la collection de scopes
+  var listScopes = document.getElementById('topic_items');
+  window.nbScopeItems = 0;
+  var fragment;
+  window.addEventListener("DOMContentLoaded", (event) => {
+    ///  extract prototype into a fragment ///
+      // output prototype hidden element of form (else it is submitted !)
+    let prototypeElt = document.getElementById("id-prototype-scope-form");
+      // delete id input (first input)
+    let firstInput = prototypeElt.getElementsByTagName('input')[0];
+    firstInput.remove();
+    let inputs = prototypeElt.getElementsByTagName("input");
+    for (let i = 0; i < inputs.length; i++) {
+      inputs[i].setAttribute("value", "");
+    }
+    fragment = document.createDocumentFragment();
+      // move prototype elt into fragment
+    fragment.appendChild(prototypeElt);
+    /// end  extract prototype into a fragment ///
+
+    // ajoute un lien de suppression à tous les éléments li de
+    // formulaires des scopes existants
+    let scopeFormLis = listScopes.getElementsByTagName('li');
+    for (let i = 0; i < scopeFormLis.length; i++) {
+      addEventDeleteOnDeleteLink(scopeFormLis[i]);
+    }
+    window.nbScopeItems = scopeFormLis.length;
+    let addLink = document.getElementById('add-a-scope');
+    addLink.onclick = function (e) {
+      // empêche le lien de créer un « # » dans l'URL
+      e.preventDefault();
+      // ajoute un nouveau formulaire de scope
+      addScopeForm();
+    };
+  });
+
+
+  function addScopeForm() {
+    console.log("window.nbScopeItems : " + window.nbScopeItems);
+    window.nbScopeItems = window.nbScopeItems + 1;
+    let prototype = fragment.getElementById("id-prototype-scope-form").innerHTML;
+    // Remplace l'indice 'O' dans le HTML du prototype par un nombre basé sur nbScopeItems
+    let newForm = prototype.replace('[/0/g', '['+window.nbScopeItems);
+    // creation d'un nouvel li dans le formulaire
+    let liElt = document.createElement('li');
+    liElt.innerHTML = newForm;
+    listScopes.appendChild(liElt);
+    reorderEltsIndexArray();
+    addEventDeleteOnDeleteLink(liElt);
+  }
+
+
+  function addEventDeleteOnDeleteLink(scopeFormLi) {
+    let scopeDelete = scopeFormLi.getElementsByClassName("scope-delete");
+    // one item <a> class "scope-delete" by li
+    scopeDelete[0].onclick = function (e) {
+      // empêche le lien de créer un « # » dans l'URL
+      e.preventDefault();
+      // supprime l'élément li (scope)
+      listScopes.removeChild(scopeFormLi);
+
+      // appel topicCompactArray pour impact avant submit
+      reorderEltsIndexArray();
+    };
+  }
+
+  // compact reorder array index
+  function reorderEltsIndexArray() {
+    let lis = listScopes.getElementsByTagName("li");
+    //console.log("lis.length = " + lis.length);
+    for (let i = 0; i < lis.length; i++) {
+      let inputReorders = lis[i].getElementsByClassName("input-reorder");
+      for (let j = 0; j < inputReorders.length; j++) {
+        updateIndice(inputReorders[j], 'name', i);
+        updateIndice(inputReorders[j], 'id', i);
+      }
+      let labels = lis[i].getElementsByTagName("label");
+      for (let j = 0; j < labels.length; j++) {
+        updateIndice(labels[j], 'for', i);
+      }
+    }
+  }
+  // ex:  for='responseDtos[x].proposition' => for='responseDtos[y].proposition'
+  function updateIndice(elt, attributName, i) {
+    let attribut = elt.getAttribute(attributName);
+    left = attribut.substring(0, attribut.indexOf('[') +1 ) + i;
+    right= attribut.substr(attribut.indexOf(']'));
+    attribut = left + right;
+    elt.setAttribute(attributName,attribut);
+  }
+
+
+</script>
+
+</body>
+</html>

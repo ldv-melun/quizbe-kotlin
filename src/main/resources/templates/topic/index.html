@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+</head>
+
+<body>
+
+<div th:replace="fragments/header :: menu(activeTab='topic')"/>
+
+  <main class="text-center">
+    <div th:switch="${topics}">
+      <h2 th:case="null">No topic yet!</h2>
+      <div th:case="*">
+        <h2 th:text="#{topics.my}">My topics</h2>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th th:text="#{name}">Name</th>
+            <th th:text="#{operations}">Operations</th>
+            <th th:text="#{visible}">Visible</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="topic : ${topics}">
+            <td th:text="${topic.name}"></td>
+            <td><a th:href="@{/topic/edit/{id}(id=${topic.id})}">Edit</a>
+              &nbsp;/&nbsp;
+              <a th:href="@{/topic/delete/{id}(id=${topic.id})}">Delete</a>
+            </td>
+            <td>
+              <form th:action="@{/topic/visible}" method="post" style="display:inline-block" class="p-1">
+                <input type="hidden" name="id" th:value="${topic.id}">
+                <div class="form-check">
+                  <input onChange="this.form.submit()" class="form-check-input" type="checkbox" value="checked" th:id="'flexCheckChecked' + ${topic.id}" id="flexCheckChecked" name="visible" th:checked="${topic.visible}">
+                  <label class="form-check-label" th:for="'flexCheckChecked' + ${topic.id}">&nbsp;</label>
+                </div>
+              </form>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <p sec:authorize="hasAuthority('TEACHER')">
+        <a href="add" th:href="@{/topic/add}" th:text="#{topic.add}">Add a new topic</a>
+      </p>
+    </div>
+
+  </main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+
+</body>
+</html>

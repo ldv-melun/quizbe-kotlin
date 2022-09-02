@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='admin')"/>
+
+<main role="main">
+    <div id="container">
+      <form action="#" th:action="@{/adduser}" th:object="${user}" method="post">
+        <label for="name">Name</label>
+        <input type="text" th:field="*{username}" id="name" placeholder="Username">
+        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+        <label for="email">Email</label>
+        <input type="text" th:field="*{email}" id="email" placeholder="Email">
+        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        <input type="submit" value="Add User">
+      </form>
+    </div>
+</main>
+<div th:replace="fragments/footer.html :: footer"/>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" th:href="@{../css/signin-register.css}" type="text/css"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='home')"/>
+
+<main class="text-center form-signin">
+  <form th:action="@{/login}" method="post">
+    <div>
+      <span>&nbsp;&nbsp;&nbsp;</span>
+      <img class="mb-4" th:src="@{/svg/quizbe.svg}" alt="logo" width="72" height="57"/>
+    </div>
+    <h1 class="h3 mb-3 fw-normal" th:text="#{welcome.login}">Please sign in</h1>
+
+    <div th:if="${param.error}" class="alert alert-danger" th:text="#{login.bad}">
+      Invalid data
+    </div>
+
+    <div class="form-floating">
+      <input class="form-control" name="username" id="username" placeholder="name@example.com or username"/>
+      <label for="username" th:text="#{emailOrUsername}">Email address or Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" name="password" id="password" placeholder="Password"/>
+      <label for="password" th:text="#{password}">Password</label>
+    </div>
+<!--    <div class="checkbox mb-3">-->
+<!--      <label>-->
+<!--        <input type="checkbox" value="remember-me"> Remember me-->
+<!--      </label>-->
+<!--    </div>-->
+    <button class="w-100 btn btn-lg btn-primary" type="submit" th:text="#{signin}">Sign in</button>
+    <div class="p-2"><a href="/"><span style="color: red" th:text="#{pw.forbidden}">forbidden password ?</span></a></div>
+    <div class="p-2"><a href="/admin/register"><span th:text="#{user.registration}">registration</span></a></div>
+  </form>
+</main>
+<div th:replace="fragments/footer.html :: footer"/>
+</body>
+</html>
