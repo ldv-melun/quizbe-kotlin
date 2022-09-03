@@ -43,7 +43,7 @@ public class QuizbeAccessDeniedHandler implements AccessDeniedHandler {
       logger.info("Access denied to " +  request.getRequestURI());
     }
 
-    response.sendRedirect(request.getContextPath() + "/error");
+    response.sendRedirect(request.getContextPath() + "/access-denied");
   }
 
 }

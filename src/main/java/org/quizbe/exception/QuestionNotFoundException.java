@@ -1,5 +1,9 @@
 package org.quizbe.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.FORBIDDEN)
 public class QuestionNotFoundException extends RuntimeException {
 
   public QuestionNotFoundException() {

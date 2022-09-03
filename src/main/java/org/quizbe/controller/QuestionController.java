@@ -66,8 +66,8 @@ public class QuestionController {
     if (idSelectedTopic != null) {
       long idTopic = Long.parseLong(idSelectedTopic);
       selectedTopic = topicService.findById(idTopic)
-              .orElseThrow(() -> new TopicNotFoundException("Invalid topic id : " + idTopic));
-      if (! currentUser.getSubscribedTopicsVisibles().contains(selectedTopic)) {
+              .orElseThrow(() -> new AccessDeniedException("Invalid topic id : " + idTopic));
+      if ( ! request.isUserInRole("TEACHER") && ! currentUser.getSubscribedTopicsVisibles().contains(selectedTopic)) {
         throw new AccessDeniedException("Topic non disponible !");
       }
     }

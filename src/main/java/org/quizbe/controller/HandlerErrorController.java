@@ -19,11 +19,15 @@ public class HandlerErrorController implements ErrorController {
 
   Logger logger = LoggerFactory.getLogger(HandlerErrorController.class);
 
+  @RequestMapping("/access-denied")
+  public String handleErrorAccess(HttpServletRequest request, Model model) {
+    return "error/access-denied";
+  }
+
   @RequestMapping("/error")
   public String handleError(HttpServletRequest request, Model model) {
     Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
-    logger.info("Logger class : " + logger.getName());
     logger.info("Error status : " + status);
 
     if (status != null) {
