@@ -37,3 +37,13 @@ src/main/resources/application-prod.properties
 src/main/resources/application-local.properties
 src/main/resources/application-save.properties
 src/main/resources/application.properties
+
+### gradle ##########
+.gradle
+/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
