@@ -5,11 +5,11 @@
 
 </head>
 <body>
-<div th:replace="fragments/header :: menu(activeTab='question')"/>
+<div th:replace="fragments/header :: menu(activeTab='question') "/>
 <main class="container">
   <div class="card">
     <div class="card-header">
-      <h4 class="panel-title d-flex justify-content-between bd-highlight mb-3">
+      <h4 class="panel-title d-flex justify-content-between bd-highlight mb-3"></h4>
         <div class="p-2 bd-highlight" th:text="${question.designer} + '~' + ${question.codesigner}"></div>
         <div class="p-2 bd-highlight" th:text="${question.name}"></div>
         <div class="p-2 bd-highlight" th:text="${question.topic.name + ' ~ ' +  question.scope.name}"></div>
@@ -38,7 +38,7 @@
           <th>
             <a onclick="hideShowValues();"> Value </a>
             <!-- 'watchValue' = temoin de visibilité de la colonne (c'est une astuce, voir hideShowValues() ) -->
-            <span id='watchValue' hidden=true class="itemValue"></span>
+            <span id='watchValue' hidden="true" class="itemValue"></span>
           </th>
           </thead>
           <tbody>
@@ -122,9 +122,7 @@
   <div class="container d-flex justify-content-left mt-5 mb-3 text-muted">
     <form th:if="${question.designer != #authentication.getPrincipal().getUsername()}"
           th:action="@{'/question/play/' + ${question.id}}" method="post" class="col-7" th:object="${ratingDto}">
-      <input type="hidden" name="goto"
-             th:value="'/question?id-selected-topic='+${question.topic.id}+'&id-selected-scope='+${question.scope.id}"
-             \>
+
       <input type="hidden" th:value="${ratingDto.id ?: null}" name="id-rating" class="id-hidden input-reorder">
       <label class="form-label" for="current_comment" th:text="#{play.user.rating}">Your rating :&nbsp;</label>
       <textarea class="form-control input-reorder" id="current_comment" name="comment"
@@ -143,7 +141,7 @@
           <i th:if="${ratingDto.value < 5}" class="fa fa-star"></i>
           <i th:if="${ratingDto.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
             <span style="font-size: 16px">&nbsp;(</span>
-            <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
+            <span th:title="#{rating.outdated}" title="a tooltip" class="visible" style="font-size: 16px"
                   th:text="#{obsolete}"></span>
             <span style="font-size: 16px">)</span>
           </i>
@@ -161,12 +159,13 @@
         <div class="mt-1">
           <button th:if="${userRating.id == null}" class="btn btn-primary" type="submit" th:text="#{create}">create
           </button>
-          <button th:if="${userRating.id != null}" class="btn btn-primary" type="submit" th:text="#{update}">update
+          <button th:if="${userRating.id != null}" class="btn btn-primary btn-sm" type="submit" th:text="#{update}">update
           </button>
 
           <a th:if="${userRating.id != null}" th:href="@{'/question/deleterating/' + ${question.id}}"
              th:text="#{delete}">delete</a>
         </div>
+      </div>
     </form>
 
   </div>
@@ -291,7 +290,7 @@
 
   function showFeedBack() {
     let elts = document.getElementsByClassName("feedback");
-    if (elts[0].hidden == true || elts[0].hidden == undefined) {
+    if (elts[0].hidden === true || elts[0].hidden === undefined) {
       for (let i = 0; i < elts.length; i++) {
         elts[i].hidden = false;
         elts[i].setAttribute("style", "display: inline-block");

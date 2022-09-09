@@ -20,7 +20,7 @@
       <img th:src="@{/svg/quizbe.svg}" alt="logo" width="72" height="57"/>
     </div>
     <h1 class="h3 mb-3 fw-normal" th:text="#{user.add}">Add user</h1>
-    <div class="form-floating">
+    <div class="form-floating m-2">
       <input type="text" th:field="*{username}" placeholder="User Name"
              class="form-control" id="usename"/>
       <label for="useName" th:text="#{username}">Username</label>
@@ -28,7 +28,7 @@
               th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
               class="validation-message"></p>
     </div>
-    <div class="form-floating">
+    <div class="form-floating m-2">
       <input type="text" th:field="*{email}" placeholder="Email"
              class="form-control" id="email"/>
       <label for="email" th:text="#{email}">Email address</label>

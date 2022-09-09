@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+<div th:replace="fragments/header :: menu(activeTab='admin')"/>
+
+<main>
+  <div class="row">
+    <div class="col-md-4 mx-auto">
+      <h3>Update user</h3>
+      <form action="#"
+            th:object="${userDto}"
+            th:action="@{'/user/update/' + ${userDto.id}}"
+            method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" th:field="*{username}" id="name" class="form-control" placeholder="Username">
+          <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="validation-message"></span>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="text" th:field="*{email}" id="email" class="form-control" placeholder="Email">
+          <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="validation-message"></span>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="">
+          <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="validation-message" ></span>
+        </div>
+        <a th:href="@{/admin/users}"><button type="button" class="btn btn-secondary" th:text="#{return.to.list}">Return to list</button></a>
+        <button type="submit" class="btn btn-primary" value="Update User">Submit</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div th:replace="fragments/footer.html :: footer"/>
+</body>
+</html>
