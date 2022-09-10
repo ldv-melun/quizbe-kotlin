@@ -65,7 +65,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")
 
-//    implementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
+    implementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
     implementation("org.jetbrains.kotlin:kotlin-maven-allopen:1.7.10")
     runtimeOnly("org.springframework.boot:spring-boot-devtools:2.7.3")
     runtimeOnly("com.h2database:h2:2.1.214")
@@ -87,5 +87,9 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.bootJar {
+    launchScript()
 }
 

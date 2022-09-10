@@ -69,7 +69,7 @@ class User {
         get() = subscribedTopics.stream().filter { topic: Topic -> topic.isVisible }.collect(Collectors.toList())
 
     fun isSubscribed(topic: Topic): Boolean {
-        return subscribedTopics!!.contains(topic)
+        return subscribedTopics.contains(topic)
     }
 
 
