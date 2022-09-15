@@ -10,13 +10,13 @@ import java.util.stream.Collectors
 import javax.persistence.*
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERQ")
 class User {
     @Transient
     var logger : Logger = LoggerFactory.getLogger(User::class.java)
 
-    @Transient
-    private val VALID_HOURS_DEFAULT_PW = QuizbeGlobals.pwLifeTimeHours
+//    @Transient
+//    private val VALID_HOURS_DEFAULT_PW = QuizbeGlobals.pwLifeTimeHours
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,11 +90,11 @@ class User {
         return null == dateUpdatePassword
     }
 
-    fun hoursWaitingToChangePassword(): Long {
+    fun hoursWaitingToChangePassword(maxHoursTimeLimite : Long): Long {
         if (dateUpdatePassword != null) return 0
         val rest = ChronoUnit.HOURS.between(
             LocalDateTime.now(),
-            dateDefaultPassword!!.plusHours(VALID_HOURS_DEFAULT_PW.toLong())
+            dateDefaultPassword!!.plusHours(maxHoursTimeLimite)
         )
 //        logger.info("this.getSetDateDefaultPassword()" + dateDefaultPassword)
         return rest
@@ -108,13 +108,13 @@ class User {
         return topic.creator?.id === id
     }
 
-    fun hasDefaultPlainTextPasswordInvalidate(): Boolean {
-        logger.info("TEMPS EN HEURE LIMITE VALIDATION : $VALID_HOURS_DEFAULT_PW")
+    fun hasDefaultPlainTextPasswordInvalidate(maxHoursTimeLimite : Long): Boolean {
+//        logger.info("TEMPS EN HEURE LIMITE VALIDATION : maxHoursTimeLimite")
         return (this.mustChangePassword()
                 &&
                 (this.dateDefaultPassword == null
                         ||
-                        this.dateDefaultPassword!!.plusHours(VALID_HOURS_DEFAULT_PW.toLong()).isBefore(LocalDateTime.now())))
+                        this.dateDefaultPassword!!.plusHours(maxHoursTimeLimite).isBefore(LocalDateTime.now())))
     }
 
 

@@ -1,64 +1,69 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <th:block th:replace="fragments/header :: header-css"/>
+    <th:block th:replace="fragments/header :: header-css"/>
 </head>
 <body>
 <div th:replace="fragments/header :: menu(activeTab='admin')"/>
 <main class="text-center">
-  <div th:switch="${users}">
-    <h2 th:case="null">No users yet!</h2>
-    <div th:case="*">
-      <h2 th:text="#{users}">Users</h2>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Edit</th>
-          <th>Delete</th>
-          <th>Roles</th>
-          <th>Password</th>
-          <th>Waiting for change PW</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-          <td th:text="${user.username}"></td>
-          <td th:text="${user.email}"></td>
-          <td><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>
-          <td><a th:href="@{delete/{id}(id=${user.id})}">Delete</a></td>
-          <td>
-            <form th:action="@{/admin/role}" th:each="role : ${allRoles}" method="post" style="display:inline-block"
-                  class="p-1">
-              <input type="hidden" name="id" th:value="${user.id}">
-              <input type="hidden" name="rolename" th:value="${role.name}">
-              <div th:switch="${#lists.contains(user.roles, role)}">
-                <input th:case="${true}" th:value="${role.name}" type="submit" class="btn btn-primary"/>
-                <input th:case="*" th:value="${role.name}" type="submit" class="btn btn-secondary"/>
-              </div>
-            </form>
-          </td>
-          <td>
-            <form th:action="@{/admin/resetpw}" method="get" style="display:inline-block"
-                  class="p-1">
-              <input type="hidden" name="id" th:value="${user.id}">
-              <input type="submit" class="btn btn-primary" th:value="#{admin.active.default.password}"/>
-            </form>
-          <td>
-          <input th:if="${user.dateUpdatePassword == null}" style="width: 125px;" type="text" readonly th:value="${user.defaultPlainTextPassword}"/>
-          <span th:if="${user.dateUpdatePassword == null}">
-            <span th:if="${user.hoursWaitingToChangePassword() > 0 }" th:text="#{admin.hours.waiting.pw(${user.hoursWaitingToChangePassword()})}"/>
-            <span th:if="${user.hoursWaitingToChangePassword() <= 0 }" th:text="#{password.outdated}"/>
-          </span>
-          <input th:if="${user.dateUpdatePassword != null}" type="text" style="width: 125px;" readonly disabled value=""/>
-        </td>
-        </tr>
-        </tbody>
-      </table>
+    <div th:switch="${users}">
+        <h2 th:case="null">No users yet!</h2>
+        <div th:case="*">
+            <h2 th:text="#{users}">Users</h2>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    <th>Roles</th>
+                    <th>Password</th>
+                    <th>Waiting for change PW</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.username}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>
+                    <td><a th:href="@{delete/{id}(id=${user.id})}">Delete</a></td>
+                    <td>
+                        <form th:action="@{/admin/role}" th:each="role : ${allRoles}" method="post"
+                              style="display:inline-block"
+                              class="p-1">
+                            <input type="hidden" name="id" th:value="${user.id}">
+                            <input type="hidden" name="rolename" th:value="${role.name}">
+                            <div th:switch="${#lists.contains(user.roles, role)}">
+                                <input th:case="${true}" th:value="${role.name}" type="submit" class="btn btn-primary"/>
+                                <input th:case="*" th:value="${role.name}" type="submit" class="btn btn-secondary"/>
+                            </div>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/resetpw}" method="get" style="display:inline-block"
+                              class="p-1">
+                            <input type="hidden" name="id" th:value="${user.id}">
+                            <input type="submit" class="btn btn-primary" th:value="#{admin.active.default.password}"/>
+                        </form>
+                    <td>
+                        <input th:if="${user.dateUpdatePassword == null}" style="width: 125px;" type="text" readonly
+                               th:value="${user.defaultPlainTextPassword}"/>
+                        <span th:if="${user.dateUpdatePassword == null}"
+                              th:with="hoursWaitingToChangePassword=${user.hoursWaitingToChangePassword(@quizbeGlobals.pwLifeTimeHours)}">
+                          <span th:if="${hoursWaitingToChangePassword > 0 }"
+                                th:text="#{admin.hours.waiting.pw(${hoursWaitingToChangePassword})}"/>
+                          <span th:if="${hoursWaitingToChangePassword <= 0 }" th:text="#{password.outdated}"/>
+                        </span>
+                        <input th:if="${user.dateUpdatePassword != null}" type="text" style="width: 125px;" readonly
+                               disabled value=""/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p><span class="fa fa-user"></span>&nbsp;<a href="/admin/register" th:text="#{user.add}">Add a new user</a></p>
     </div>
-    <p> <span class="fa fa-user"></span>&nbsp;<a href="/admin/register" th:text="#{user.add}">Add a new user</a></p>
-  </div>
 </main>
 <div th:replace="fragments/footer.html :: footer"/>
 </body>

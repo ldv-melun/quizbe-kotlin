@@ -31,7 +31,7 @@ sentence
 dateCreate
 datePublication
 designerName
-codesignerNames
+codesignerName
 }
 
 Object User{
@@ -48,10 +48,9 @@ id
 name
 }
 
-
 User "*" -- "*" Role:"\t\t\t\t"
-User " *" - "*" Topic:"\t\t\tsubsribed"
-User "1 creator" - "*" Topic:"\t\t\t"
+User " * subscribers" - " * subscriberTopics" Topic:"\t\t\t\t\t\t\t\t"
+User::valide "\n1 creator" - "\n * topics" Topic:"\t\t\t\t"
 Question "1" - "2..*" Response:"\t\t"
 Question "*" -- "1" Scope
 Question "*" -- "1" Topic

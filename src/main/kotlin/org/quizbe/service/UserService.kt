@@ -22,5 +22,8 @@ interface UserService {
     fun invalidePasswordBySetWithDefaultPlainTextPassord(user: User)
     fun checkAddUpdateUser(userDto: UserDto, bindingResult: BindingResult)
     fun updateDefaultPlainTextPassword(user: User)
-    fun hasDefaultPlainTextPasswordInvalidate(user: User): Boolean
+
+//    circular dependence problem, so put this method in User class
+//    fun hasDefaultPlainTextPasswordInvalidate(user: User): Boolean
+//    fun hoursWaitingToChangePassword(user: User) : Long
 }

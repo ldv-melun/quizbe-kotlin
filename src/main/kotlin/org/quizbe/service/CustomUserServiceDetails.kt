@@ -1,5 +1,6 @@
 package org.quizbe.service
 
+import org.quizbe.config.QuizbeProperties
 import org.quizbe.dao.UserRepository
 import org.quizbe.model.Role
 import org.quizbe.model.User
@@ -25,7 +26,11 @@ class CustomUserServiceDetails : UserDetailsService {
 //    private val VALID_HOURS_DEFAULT_PW =  QuizbeProperties().pwLifeTimeHours
 
     @Autowired
-    lateinit var userService : UserRepository
+    lateinit var userRepository : UserRepository
+
+    @Autowired
+    lateinit var quizbeProperties: QuizbeProperties
+
 
     @Transactional
     @Throws(UsernameNotFoundException::class)
@@ -33,9 +38,9 @@ class CustomUserServiceDetails : UserDetailsService {
 
         // voir aussi  (Implement UserDetails)
         //  https://www.codejava.net/frameworks/spring-boot/spring-boot-security-authentication-with-jpa-hibernate-and-mysql
-        var user = userService.findByEmail(username)
+        var user = userRepository.findByEmail(username)
         if (user == null) {
-            user = userService.findByUsername(username)
+            user = userRepository.findByUsername(username)
             if (user == null) {
                 throw UsernameNotFoundException("Could not find user")
             }
@@ -45,7 +50,7 @@ class CustomUserServiceDetails : UserDetailsService {
         val authorities: List<GrantedAuthority>
         authorities = if (user.mustChangePassword()) {
             logger.info("user do change password")
-            if (user.hasDefaultPlainTextPasswordInvalidate()) {
+            if (user.hasDefaultPlainTextPasswordInvalidate(quizbeProperties.pwLifeTimeHours)) {
                 logger.info("user has password expired, so we set a new default password to him")
                 updateDefaultPlainTextPassword(user)
             }
@@ -79,6 +84,6 @@ class CustomUserServiceDetails : UserDetailsService {
         user.password = encoder.encode(user.defaultPlainTextPassword)
         user.dateDefaultPassword = LocalDateTime.now()
         user.dateUpdatePassword = null
-        userService.save(user)
+        userRepository.save(user)
     }
 }

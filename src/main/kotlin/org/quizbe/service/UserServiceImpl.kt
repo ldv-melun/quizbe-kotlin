@@ -8,6 +8,7 @@ import org.quizbe.exception.UserNotFoundException
 import org.quizbe.model.Role
 import org.quizbe.model.User
 import org.quizbe.model.User.Companion.generateRandomPassword
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.Assert
 import org.springframework.validation.BindingResult
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.stream.Collectors
 
@@ -25,11 +27,9 @@ class UserServiceImpl(
     private val topicService: TopicService,
     private val ratingService: RatingService,
     private val bCryptPasswordEncoder: BCryptPasswordEncoder,
-    private val quizbeProperties: QuizbeProperties
     ) : UserService {
 
-    var logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
-
+    var logger : Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
     override fun saveUserFromUserDto(userDto: UserDto): User {
         val roleUserDB = roleRepository.findByName("USER")
@@ -197,13 +197,6 @@ class UserServiceImpl(
         }
     }
 
-   override fun hasDefaultPlainTextPasswordInvalidate(user: User): Boolean {
-        logger.info("TEMPS EN HEURE LIMITE VALIDATION : ${quizbeProperties.pwLifeTimeHours}")
-        return (user.mustChangePassword()
-                &&
-                (user.dateDefaultPassword == null
-                        ||
-                        user.dateDefaultPassword!!.plusHours(quizbeProperties.pwLifeTimeHours.toLong()).isBefore(LocalDateTime.now())))
-    }
+
 
 }

@@ -3,9 +3,9 @@ package org.quizbe.config
 import org.springframework.stereotype.Component
 
 @Component
-class QuizbeGlobals {
-    companion object {
-        const val pwLifeTimeHours: Int = 48+1
-    }
+class QuizbeGlobals(private val properties: QuizbeProperties) {
+
+    val pwLifeTimeHours: Long
+        get() = properties.pwLifeTimeHours
 
 }

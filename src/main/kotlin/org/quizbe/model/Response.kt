@@ -19,8 +19,9 @@ class Response {
     @Column(name = "FEEDBACK", nullable = false)
     var feedback: String? = null
 
+    // VALUE is a reserved word in h2, so VALUEQ (or force quoted column name...)
     @Basic
-    @Column(name = "VALUE", nullable = false)
+    @Column(name = "VALUEQ", nullable = false)
     var value: Int? = null
 
     @ManyToOne
