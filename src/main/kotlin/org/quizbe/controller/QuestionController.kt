@@ -20,6 +20,7 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
@@ -29,10 +30,11 @@ import javax.validation.Valid
 @RequestMapping("/question")
 @Controller
 class QuestionController @Autowired constructor(private val topicService: TopicService,
-                                                     private val userService: UserService,
-                                                     private val scopeService: ScopeService,
-                                                     private val questionService: QuestionService,
-                                                     private val ratingService: RatingService) {
+                                                private val userService: UserService,
+                                                private val scopeService: ScopeService,
+                                                private val questionService: QuestionService,
+                                                private val ratingService: RatingService,
+                                                private val emailService : EmailServiceImpl) {
     val logger : Logger = LoggerFactory.getLogger(QuestionController::class.java)
 
     @GetMapping(value = ["/index", "/", ""])
@@ -188,7 +190,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
     @PostMapping("/play/{idquest}")
     fun doUserRating(@PathVariable("idquest") idQuestion: Long, @Valid @ModelAttribute ratingDto: RatingDto?,
                      result: BindingResult, model: Model,
-                     request: HttpServletRequest, redirAttrs: RedirectAttributes?): String {
+                     request: HttpServletRequest, redirAttrs: RedirectAttributes): String {
         if (result.hasErrors()) {
             return showPlay(idQuestion, ratingDto, model, request) //"/question/play";
         }
@@ -203,6 +205,29 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         userRating.value = ratingDto.value
         userRating.dateUpdate = LocalDateTime.now()
         ratingService.save(userRating)
+        // TODO send mail to designer
+
+        val designerUser = userService.findByUsername(question.designer)
+        if (designerUser != null)
+        try {
+            val baseUrl :String  = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
+
+            val messageEmailBody = "A new comment is coming for your quiz \" ${question.name} \" on " +
+                    "<a href=\"" +  baseUrl + "\"> url app</a>"
+
+            logger.info("Send email for new comment to " + question.designer)
+            logger.info("messageEmailBody : $messageEmailBody")
+           //  emailService.sendSimpleMessage(designerUser.email, "New comment", messageEmailBody)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
+        }
+
+
         //    redirAttrs.addFlashAttribute("successMessage", "operation.successful");
         return "redirect:/question/play/$idQuestion"
     }

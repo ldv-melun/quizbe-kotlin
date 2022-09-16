@@ -14,6 +14,7 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
@@ -131,17 +132,20 @@ class AdminController @Autowired constructor(
     }
 
     @GetMapping(value = ["/resetpw"])
-    fun resetpw(redirAttrs: RedirectAttributes, id: Long): String {
+    fun resetpw(redirAttrs: RedirectAttributes, id: Long, request: HttpServletRequest): String {
         val user: User? = userService.findById(id).orElseThrow { UserNotFoundException() }
         userService.invalidePasswordBySetWithDefaultPlainTextPassord(user!!)
         try {
-            val messageEmailBody = "Please go to <a href=\"https://quizbe.org\">https://quizbe.org</a> <br>" +
+            val baseUrl :String  = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
+
+            val messageEmailBody = "Please go to <a href=\"$baseUrl\">$baseUrl</a> <br>" +
                     "for change your password<br>" +
                     "by pre-connect with this default password : <pre>" + user.defaultPlainTextPassword + "</pre>"
             logger.info("Send email to " + user.email)
             emailService.sendSimpleMessage(user.email, "Update PW", messageEmailBody)
-            // don't work with parameter...
-            //  redirAttrs.addFlashAttribute("successMessage", "#{${email.force.update.pw.message}("+user.getEmail()+")}");
             redirAttrs.addFlashAttribute("successMessage", "email.force.update.pw.message")
         } catch (e: Exception) {
             e.printStackTrace()
