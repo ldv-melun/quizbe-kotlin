@@ -107,3 +107,6 @@ code {
     color: rgba(255, 255, 255, .55);
 }
 
+.pw-invalid {
+    background-color: orange;
+}

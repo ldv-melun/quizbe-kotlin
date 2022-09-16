@@ -87,6 +87,7 @@
   <div>
     <p th:if="${errorMessage != null}" th:text="#{${errorMessage}}" class="alert alert-danger"></p>
     <p th:if="${successMessage != null}" th:text="#{${successMessage}}" class="alert alert-success"></p>
+    <p th:if="${simpleMessage != null}" th:text="${simpleMessage}" class="alert alert-info"></p>
   </div>
 </div>
 </body>

@@ -46,11 +46,12 @@
                             <input type="hidden" name="id" th:value="${user.id}">
                             <input type="submit" class="btn btn-primary" th:value="#{admin.active.default.password}"/>
                         </form>
-                    <td>
+                    </td>
+                    <td th:with="hoursWaitingToChangePassword=${user.hoursWaitingToChangePassword(@quizbeGlobals.pwLifeTimeHours)}">
                         <input th:if="${user.dateUpdatePassword == null}" style="width: 125px;" type="text" readonly
+                               th:classappend="${hoursWaitingToChangePassword <= 0} ? 'pw-invalid' : '' "
                                th:value="${user.defaultPlainTextPassword}"/>
-                        <span th:if="${user.dateUpdatePassword == null}"
-                              th:with="hoursWaitingToChangePassword=${user.hoursWaitingToChangePassword(@quizbeGlobals.pwLifeTimeHours)}">
+                        <span th:if="${user.dateUpdatePassword == null}">
                           <span th:if="${hoursWaitingToChangePassword > 0 }"
                                 th:text="#{admin.hours.waiting.pw(${hoursWaitingToChangePassword})}"/>
                           <span th:if="${hoursWaitingToChangePassword <= 0 }" th:text="#{password.outdated}"/>

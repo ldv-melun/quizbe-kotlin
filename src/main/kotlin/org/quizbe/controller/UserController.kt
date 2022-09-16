@@ -32,6 +32,8 @@ class UserController @Autowired constructor(private val userService: UserService
                     throw AccessDeniedException("edit user")
                 }
                 val userDto = userService.findUserDtoById(id.get())
+                // logger.info("userDto pw :${userDto.password}") pw is hashed
+                userDto.password=""
                 model.addAttribute("userDto", userDto)
             } catch (ex: UserNotFoundException) {
                 throw UserNotFoundException(ex)

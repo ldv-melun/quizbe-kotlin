@@ -37,25 +37,31 @@ class AdminController @Autowired constructor(
     fun addUsers(request: HttpServletRequest, redirAttrs: RedirectAttributes): String {
         val users = request.getParameter("users").split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val roles: MutableSet<String> = HashSet()
+        var cptNewUser = 0
+        var cptUsers = 0
         roles.add("USER")
         for (user in users) {
             val userAttrib = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             if (userAttrib.size < 3) continue
+            cptUsers++
             val userDto = UserDto(userAttrib[0].trim { it <= ' ' },
                 userAttrib[1].trim { it <= ' ' },
                 userAttrib[2].trim { it <= ' ' })
             userDto.roles = roles
             try {
                 userService.saveUserFromUserDto(userDto)
+                cptNewUser++
             } catch (e: Exception) {
                 logger.warn("""
     Exception in addUsers : $userDto
     ${e.message}
     """.trimIndent()
                 )
-                redirAttrs.addFlashAttribute("errorMessage", "admin.user.add.error")
+                //
             }
         }
+        // TODO show users not added
+        redirAttrs.addFlashAttribute("simpleMessage", "$cptNewUser on $cptUsers added")
         return "redirect:/admin/users"
     }
 
