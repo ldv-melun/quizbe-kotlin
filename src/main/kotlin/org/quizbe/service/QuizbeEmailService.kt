@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import javax.mail.MessagingException
@@ -35,7 +36,9 @@ class QuizbeEmailService @Autowired constructor(private val emailSender: JavaMai
         }
     }
 
-    fun sendMailAfterSetDefaultPwPlainText(user: User, baseUrl : String): Boolean {
+    // declare asynchrone methode : https://www.baeldung.com/spring-async
+    @Async
+    fun sendMailAfterSetDefaultPwPlainText(user: User, baseUrl : String) {
         try {
             val messageEmailBody = "Please go to <a href=\"$baseUrl\">$baseUrl</a> <br>" +
                     "for change your password<br>" +
@@ -44,28 +47,22 @@ class QuizbeEmailService @Autowired constructor(private val emailSender: JavaMai
             this.sendSimpleMessage(user.email, "Update PW", messageEmailBody)
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
         }
-        return true
     }
 
 
-    fun sendMailToDesignerAfterCreteOrUpdateRating(designerUser: User, question: Question, baseUrl: String): Boolean {
+    @Async
+    fun sendMailToDesignerAfterCreteOrUpdateRating(designerUser: User, question: Question, baseUrl: String) { //}: Boolean {
 
         val messageEmailBody = "A new comment is coming for your quiz \" ${question.name} \" on " +
                 "<a href=\"" + baseUrl + "\"> url app</a>"
-
         this.sendSimpleMessage(designerUser.email, "New or Update comment", messageEmailBody)
 
-//        logger.info("Send email for new comment to " + question.designer)
-//        logger.info("messageEmailBody : $messageEmailBody")
         try {
             this.sendSimpleMessage(designerUser.email, "New or Update comment", messageEmailBody)
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
         }
-        return true
     }
 
 }

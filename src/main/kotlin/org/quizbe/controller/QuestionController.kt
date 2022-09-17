@@ -40,6 +40,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
                                                 private val quizbeEmailService: QuizbeEmailService) {
     val logger : Logger = LoggerFactory.getLogger(QuestionController::class.java)
 
+
     @GetMapping(value = ["/index", "/", ""])
     fun questions(model: Model, request: HttpServletRequest): String {
         val currentUser = userService.findByUsername(request.userPrincipal.name) ?: throw UserNotFoundException()
@@ -213,12 +214,14 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         // notification by mail to designer
         val designerUser = userService.findByUsername(question.designer)
         if (designerUser != null) {
-            // TODO make this call async ?
-            if (quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))) {
-                redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful");
-            } else {
-                redirAttrs.addFlashAttribute(ERROR_MESSAGE, "email.error.force.update.pw.message")
-            }
+            // an async call
+            quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))
+
+//            if (quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))) {
+//                redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful");
+//            } else {
+//                redirAttrs.addFlashAttribute(ERROR_MESSAGE, "email.error.force.update.pw.message")
+//            }
         }
 
         return "redirect:/question/play/$idQuestion"

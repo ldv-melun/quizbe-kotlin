@@ -1,5 +1,6 @@
 package org.quizbe.controller
 
+import org.quizbe.config.QuizbeGlobals
 import org.quizbe.dto.UserDto
 import org.quizbe.exception.UserNotFoundException
 import org.quizbe.model.User
@@ -135,11 +136,15 @@ class AdminController @Autowired constructor(
     fun resetpw(redirAttrs: RedirectAttributes, id: Long, request: HttpServletRequest): String {
         val user: User? = userService.findById(id).orElseThrow { UserNotFoundException() }
         userService.invalidePasswordBySetWithDefaultPlainTextPassord(user!!)
-        if (quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))) {
-            redirAttrs.addFlashAttribute("successMessage", "email.force.update.pw.message")
-        } else {
-            redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
-        }
+        // async call
+        quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))
+        redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "Message being sent to ${user.email}...")
+
+//        if (quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))) {
+//            redirAttrs.addFlashAttribute("successMessage", "email.force.update.pw.message")
+//        } else {
+//            redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
+//        }
         return "redirect:/admin/users"
     }
 }
