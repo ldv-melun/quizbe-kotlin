@@ -3,9 +3,10 @@ package org.quizbe.controller
 import org.quizbe.dto.UserDto
 import org.quizbe.exception.UserNotFoundException
 import org.quizbe.model.User
-import org.quizbe.service.EmailServiceImpl
+import org.quizbe.service.QuizbeEmailService
 import org.quizbe.service.RoleService
 import org.quizbe.service.UserService
+import org.quizbe.utils.Utils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,6 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
@@ -23,7 +23,7 @@ import javax.validation.Valid
 class AdminController @Autowired constructor(
     private val userService: UserService,
     private val roleService: RoleService,
-    private val emailService: EmailServiceImpl
+    private val quizbeEmailService: QuizbeEmailService
 ) {
     var logger: Logger = LoggerFactory.getLogger(AdminController::class.java)
 
@@ -135,20 +135,9 @@ class AdminController @Autowired constructor(
     fun resetpw(redirAttrs: RedirectAttributes, id: Long, request: HttpServletRequest): String {
         val user: User? = userService.findById(id).orElseThrow { UserNotFoundException() }
         userService.invalidePasswordBySetWithDefaultPlainTextPassord(user!!)
-        try {
-            val baseUrl :String  = ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath(null)
-                .build()
-                .toUriString();
-
-            val messageEmailBody = "Please go to <a href=\"$baseUrl\">$baseUrl</a> <br>" +
-                    "for change your password<br>" +
-                    "by pre-connect with this default password : <pre>" + user.defaultPlainTextPassword + "</pre>"
-            logger.info("Send email to " + user.email)
-            emailService.sendSimpleMessage(user.email, "Update PW", messageEmailBody)
+        if (quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))) {
             redirAttrs.addFlashAttribute("successMessage", "email.force.update.pw.message")
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } else {
             redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
         }
         return "redirect:/admin/users"

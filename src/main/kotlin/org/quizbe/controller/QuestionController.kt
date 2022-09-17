@@ -1,5 +1,7 @@
 package org.quizbe.controller
 
+import org.quizbe.config.QuizbeGlobals.Constants.ERROR_MESSAGE
+import org.quizbe.config.QuizbeGlobals.Constants.SUCCESS_MESSAGE
 import org.quizbe.dto.QuestionDto
 import org.quizbe.dto.RatingDto
 import org.quizbe.exception.ScopeNotFoundException
@@ -10,6 +12,7 @@ import org.quizbe.model.Rating
 import org.quizbe.model.Scope
 import org.quizbe.model.Topic
 import org.quizbe.service.*
+import org.quizbe.utils.Utils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +37,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
                                                 private val scopeService: ScopeService,
                                                 private val questionService: QuestionService,
                                                 private val ratingService: RatingService,
-                                                private val emailService : EmailServiceImpl) {
+                                                private val quizbeEmailService: QuizbeEmailService) {
     val logger : Logger = LoggerFactory.getLogger(QuestionController::class.java)
 
     @GetMapping(value = ["/index", "/", ""])
@@ -180,7 +183,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         val userRating : Rating? = ratingService.getRating(currentUser, question)?.orElse(null)
         if (userRating != null) {
             ratingService.delete(userRating)
-            redirAttrs.addFlashAttribute("successMessage", "delete.ok")
+            redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "delete.ok")
         } else {
             redirAttrs.addFlashAttribute("errorMessage", "delete.no.ok")
         }
@@ -204,31 +207,20 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         userRating.comment = ratingDto!!.comment
         userRating.value = ratingDto.value
         userRating.dateUpdate = LocalDateTime.now()
+
         ratingService.save(userRating)
-        // TODO send mail to designer
 
+        // notification by mail to designer
         val designerUser = userService.findByUsername(question.designer)
-        if (designerUser != null)
-        try {
-            val baseUrl :String  = ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath(null)
-                .build()
-                .toUriString();
-
-            val messageEmailBody = "A new comment is coming for your quiz \" ${question.name} \" on " +
-                    "<a href=\"" +  baseUrl + "\"> url app</a>"
-
-            logger.info("Send email for new comment to " + question.designer)
-            logger.info("messageEmailBody : $messageEmailBody")
-           //  emailService.sendSimpleMessage(designerUser.email, "New comment", messageEmailBody)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
+        if (designerUser != null) {
+            // TODO make this call async ?
+            if (quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))) {
+                redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful");
+            } else {
+                redirAttrs.addFlashAttribute(ERROR_MESSAGE, "email.error.force.update.pw.message")
+            }
         }
 
-
-        //    redirAttrs.addFlashAttribute("successMessage", "operation.successful");
         return "redirect:/question/play/$idQuestion"
     }
 
@@ -252,9 +244,9 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
             // no change update date ? (because it's admin who performs this operation)
             // userRating.setDateUpdate(LocalDateTime.now());
             ratingService.save(userRating)
-            redirAttrs.addFlashAttribute("successMessage", "operation.successful")
+            redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful")
         } catch (e: Exception) {
-            redirAttrs.addFlashAttribute("errorMessage", "operation.fail")
+            redirAttrs.addFlashAttribute(ERROR_MESSAGE, "operation.fail")
         }
         return "redirect:/question/play/$idQuestion"
     }
