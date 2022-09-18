@@ -9,18 +9,19 @@
 <main class="container">
   <div class="card">
     <div class="card-header">
-      <h4 class="panel-title d-flex justify-content-between bd-highlight mb-3"></h4>
+      <div class="panel-title d-flex justify-content-between bd-highlight mb-3 h4">
         <div class="p-2 bd-highlight" th:text="${question.designer} + '~' + ${question.codesigner}"></div>
         <div class="p-2 bd-highlight" th:text="${question.name}"></div>
         <div class="p-2 bd-highlight" th:text="${question.topic.name + ' ~ ' +  question.scope.name}"></div>
-      </h4>
+      </div>
     </div>
     <div class="card-body">
       <div class="form-group">
         <div>
           <label for="sentence" class="form-label">Question</label>
-          <textarea class="sentence form-control" id="sentence" rows="5" readonly th:text="${question.sentence}">
-          </textarea>
+          <div class="sentence form-control" id="sentence" rows="5" readonly>
+            <pre th:text="${question.sentence}">  </pre>
+          </div>
         </div>
       </div>
       <div class="form-group">

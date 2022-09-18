@@ -107,6 +107,7 @@ class TopicService @Autowired constructor(var topicRepository: TopicRepository, 
     }
 
     fun save(topic: Topic) {
+        logger.info("Topic : $topic")
         topicRepository.save(topic)
     }
 }

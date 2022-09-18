@@ -2,6 +2,7 @@ package org.quizbe.config
 
 import org.quizbe.dto.*
 import org.quizbe.exception.TopicNotFoundException
+import org.quizbe.exception.UserNotFoundException
 import org.quizbe.model.Rating
 import org.quizbe.model.Role
 import org.quizbe.model.User
@@ -79,15 +80,17 @@ class PopulateData : ApplicationRunner {
 
         // users subscribe to topic1
         val topic = topicService!!.findTopicById(1L).get()
+//        admin!!.subscribedTopics.add(topic)
         topic.addSubscribedr(admin!!)
         topic.addSubscribedr(teacher!!)
         topic.addSubscribedr(eleve!!)
+
         topicService!!.save(topic)
 
     }
 
     private fun addQuestions() {
-        val topic = (topicService!!.getTopicById(1L).get()) ?:  throw TopicNotFoundException()
+        val topic = topicService!!.getTopicById(1L).get()
 
         val responseDtos = mutableListOf<ResponseDto>()
         responseDtos.add(ResponseDto(null, "_42_", "feedback proposition 1", 1))
@@ -115,10 +118,14 @@ class PopulateData : ApplicationRunner {
             val teacherDto = UserDto("prof", "prof@prof.org", "profprof", roles)
             logger.info("userTeacher : $teacherDto")
             teacher = userService!!.saveUserFromUserDto(teacherDto)
+
             roles.remove("TEACHER")
             val eleveDto = UserDto("eleve", "eleve@eleve.org", "eleveeleve", roles)
             logger.info("userEleve : $eleveDto")
             eleve = userService!!.saveUserFromUserDto(eleveDto)
         }
+        this.admin = userService!!.findByUsername("admin") ?: throw UserNotFoundException("admin not found")
+        this.teacher = userService!!.findByUsername("prof") ?: throw UserNotFoundException("prof not found")
+        this.eleve = userService!!.findByUsername("eleve") ?: throw UserNotFoundException("eleve not found")
     }
 }

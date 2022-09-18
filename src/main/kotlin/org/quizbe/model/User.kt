@@ -47,7 +47,8 @@ class User {
     @JoinTable(name = "USER_ROLES", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "ROLE_ID", referencedColumnName = "id")])
     var roles = mutableSetOf<Role>()
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribers", cascade = [CascadeType.ALL])
+//    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribers", cascade = [CascadeType.ALL])
+    @ManyToMany(mappedBy = "subscribers", fetch = FetchType.EAGER)
     var subscribedTopics = mutableSetOf<Topic>()
 
     @OneToMany(mappedBy = "creator", cascade = [CascadeType.ALL])

@@ -28,9 +28,11 @@ class Topic {
     @ManyToOne
     var creator: User? = null
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "USER_TOPICS", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "TOPIC_ID", referencedColumnName = "id")])
-    var subscribers = mutableListOf<User>()
+    @ManyToMany(cascade = [CascadeType.PERSIST], fetch = FetchType.EAGER)
+    @JoinTable(name = "USER_TOPICS",
+        joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "TOPIC_ID", referencedColumnName = "id")])
+    var subscribers = mutableSetOf<User>()
 
     fun getScopes(): MutableList<Scope> {
         return scopes
@@ -44,10 +46,7 @@ class Topic {
     }
 
     fun removeScopes() {
-        val it = scopes.iterator()
-        while (it.hasNext()) {
-            it.remove()
-        }
+        this.scopes.clear();
     }
 
     fun getQuestions(scope: Scope?): MutableList<Question> {
