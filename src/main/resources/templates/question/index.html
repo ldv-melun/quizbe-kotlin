@@ -5,8 +5,8 @@
 </head>
 <body>
 <div th:replace="fragments/header :: menu(activeTab='question')"/>
-<main class="container">
-  <div class="bg-light p-5 rounded">
+<main class="p-2">
+  <div class="bg-light rounded">
     <div class="row">
       <div class="col-md-6">
         <!--        <p th:text="'Nb de classes : ' + ${user.topics.size}"</p>-->
@@ -67,10 +67,10 @@
         <tr>
           <th>Name</th>
           <th>Designer(s)</th>
-          <th>Update date</th>
+          <th class="d-none d-lg-table-cell" >Update date</th>
           <th>Operations</th>
           <th>Rating</th>
-          <th>Users rating</th>
+          <th class="d-none d-lg-table-cell" >Users rating</th>
           <th>Scope</th>
         </tr>
         </thead>
@@ -78,7 +78,7 @@
         <tr th:each="question : ${questions}">
           <td title="" class="public" th:text="${question.name}">analyse-1</td>
           <td th:text="${question.designer}">okpu</td>
-          <td th:text="${question.dateUpdate}">25/03/2020 14:06</td>
+          <td class="d-none d-lg-table-cell" th:text="${#temporals.format(question.dateUpdate, 'dd-MMM-yyyy')}">25-09-2022</td>
           <td>
             <a th:href="@{/question/play/{id}(id=${question.id})}">play</a>
             <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/edit/' + ${question.id}}">/edit</a>
@@ -102,7 +102,7 @@
             <!--                     readonly="true"/>-->
 
           </td>
-          <td th:text="${question.ratings.size()}"></td>
+          <td class="d-none d-lg-table-cell" th:text="${question.ratings.size()}"></td>
           <td th:text="${question.scope.name}">Scope</td>
         </tr>
         </tbody>

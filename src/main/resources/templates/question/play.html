@@ -6,10 +6,10 @@
 </head>
 <body>
 <div th:replace="fragments/header :: menu(activeTab='question') "/>
-<main class="container">
+<main class="p-3">
   <div class="card">
     <div class="card-header">
-      <div class="panel-title d-flex justify-content-between bd-highlight mb-3 h4">
+      <div class="panel-title d-flex justify-content-between bd-highlight mb-3 h5">
         <div class="p-2 bd-highlight" th:text="${question.designer} + '~' + ${question.codesigner}"></div>
         <div class="p-2 bd-highlight" th:text="${question.name}"></div>
         <div class="p-2 bd-highlight" th:text="${question.topic.name + ' ~ ' +  question.scope.name}"></div>
