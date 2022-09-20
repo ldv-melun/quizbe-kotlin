@@ -78,7 +78,7 @@
         <tr th:each="question : ${questions}">
           <td title="" class="public" th:text="${question.name}">analyse-1</td>
           <td th:text="${question.designer}">okpu</td>
-          <td class="d-none d-lg-table-cell" th:text="${#temporals.format(question.dateUpdate, 'dd-MMM-yyyy')}">25-09-2022</td>
+          <td class="d-none d-lg-table-cell" th:text="${#temporals.format(question.dateUpdate, 'dd-MMM-yyyy HH:mm')}">25-09-2022</td>
           <td>
             <a th:href="@{/question/play/{id}(id=${question.id})}">play</a>
             <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/edit/' + ${question.id}}">/edit</a>
