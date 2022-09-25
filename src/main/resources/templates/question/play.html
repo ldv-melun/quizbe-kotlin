@@ -140,7 +140,7 @@
           <i class="fa fa-star" th:classappend="${ratingDto.value >= 4} ? 'rating-color'"></i>
           <i th:if="${ratingDto.value >= 5}" class="fa fa-smile-beam rating-color"></i>
           <i th:if="${ratingDto.value < 5}" class="fa fa-star"></i>
-          <i th:if="${ratingDto.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
+          <i th:if="${ratingDto.outDated}" class="m-3" aria-hidden="true">
             <span style="font-size: 16px">&nbsp;(</span>
             <span th:title="#{rating.outdated}" title="a tooltip" class="visible" style="font-size: 16px"
                   th:text="#{obsolete}"></span>
@@ -190,11 +190,10 @@
 
             <div>
               <label th:for="'comment' + ${iterStat.index}" th:text="${rating.user.username}">&nbsp;</label>
-              <i th:if="${rating.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
-                <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
-                      th:text="#{obsolete}">&nbsp;&nbsp;&nbsp;</span>
+              <i th:if="${rating.outDated}" class="m-3" aria-hidden="true">
+               ( <span th:text="#{obsolete}"> th:title="#{rating.outdated}"
+                title="a tooltip" class="visible" style="font-size: 16px">&nbsp;&nbsp;&nbsp;</span> )
               </i>
-
               <i th:if="${rating.outDated == false}" class="fa fa-star"
                  th:classappend="${rating.value >= 1} ? 'rating-color'"></i>
               <i th:if="${rating.outDated == false}" class="fa fa-star"
@@ -228,11 +227,11 @@
                th:classappend="${rating.value >= 4} ? 'rating-color'"></i>
             <i th:if="${rating.outDated == false and rating.value >= 5}" class="fa fa-smile-beam rating-color"></i>
             <i th:if="${rating.outDated == false and rating.value < 5}" class="fa fa-star"></i>
-            <i th:if="${rating.outDated}" class="m-3 fa fa-exclamation-triangle warning-color" aria-hidden="true">
-              <span style="font-size: 16px">&nbsp;(</span>
-              <span th:title="#{rating.outdated}" title="a tooltip" classe="visible" style="font-size: 16px"
-                    th:text="#{obsolete}"></span>
-              <span style="font-size: 16px">)</span>
+            <i th:if="${rating.outDated}" class="m-3" aria-hidden="true">
+              <span style="font-size: 16px">&nbsp;</span>
+              <span th:text="#{obsolete}" th:title="#{rating.outdated}" title="a tooltip" class="visible" style="font-size: 16px">
+              </span>
+              <span style="font-size: 16px"></span>
             </i>
           </div>
           <textarea th:if="${#authorization.expression('hasAuthority(''ADMIN'')') == false }"
