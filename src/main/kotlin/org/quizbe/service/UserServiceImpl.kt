@@ -1,6 +1,5 @@
 package org.quizbe.service
 
-import org.quizbe.config.QuizbeProperties
 import org.quizbe.dao.RoleRepository
 import org.quizbe.dao.UserRepository
 import org.quizbe.dto.UserDto
@@ -11,14 +10,15 @@ import org.quizbe.model.User.Companion.generateRandomPassword
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.data.domain.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.util.Assert
 import org.springframework.validation.BindingResult
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.stream.Collectors
+
 
 @Service
 class UserServiceImpl(
@@ -79,7 +79,7 @@ class UserServiceImpl(
         return userRepository.findByUsername(username)
     }
 
-    override fun findAll(): List<User?> {
+    override fun findAll(): MutableIterable<User?> {
         return userRepository.findAll()
     }
 
@@ -197,6 +197,26 @@ class UserServiceImpl(
         }
     }
 
+    override fun getPaginatedUsers(pageNo: Int, pageSize: Int, sortBy: String): List<User> {
+        val paging: Pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy))
+        val pagedResult: Page<User> = userRepository.findAll(paging)
+        return if (pagedResult.hasContent()) {
+            pagedResult.content
+        } else {
+            ArrayList<User>()
+        }
+    }
+
+    override fun findPaginated(pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User> {
+        val sort =
+            if (sortDirection.equals(Sort.Direction.ASC.name, ignoreCase = true))
+                Sort.by(sortField).ascending()
+            else
+                Sort.by(sortField).descending()
+
+        val pageable: Pageable = PageRequest.of(pageNo - 1, pageSize, sort)
+        return this.userRepository.findAll(pageable)
+    }
 
 
 }

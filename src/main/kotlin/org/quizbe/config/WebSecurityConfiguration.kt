@@ -33,7 +33,7 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        http.authorizeRequests()
+        http.authorizeHttpRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
@@ -54,6 +54,9 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
                 .logout()
                 .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
                 .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
         // .exceptionHandling().accessDeniedPage("/access-denied");

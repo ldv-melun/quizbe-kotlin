@@ -20,7 +20,7 @@ class Topic {
     var isVisible = true
 
     @OneToMany(mappedBy = "topic", cascade = [CascadeType.ALL])
-    private var scopes = mutableListOf <Scope>()
+    private var scopes = mutableListOf<Scope>()
 
     @OneToMany(mappedBy = "topic", cascade = [CascadeType.ALL])
     private var questions = mutableListOf<Question>()

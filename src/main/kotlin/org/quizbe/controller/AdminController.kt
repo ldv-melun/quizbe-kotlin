@@ -11,6 +11,7 @@ import org.quizbe.utils.Utils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -30,7 +31,31 @@ class AdminController @Autowired constructor(
 
     @GetMapping("/users")
     fun showUserList(model: Model): String {
-        model.addAttribute("users", userService.findAll())
+        return this.getPaginatedUsers(1, 2, "id", "asc", model) // "admin/list-users"
+    }
+
+    @GetMapping("/users2")
+    fun getPaginatedUsers(
+        @RequestParam(defaultValue = "0") pageNo : Int,
+        @RequestParam(defaultValue = "10") pageSize: Int,
+        @RequestParam(defaultValue = "id") sortBy : String,
+        @RequestParam(defaultValue = "asc") sortDir : String,
+        model: Model): String {
+
+//        val pageSize = 5
+
+        val page: Page<User> = userService.findPaginated(pageNo, pageSize, sortBy, sortDir)
+        val listUsers: List<User> = page.content
+
+        model.addAttribute("currentPage", pageNo)
+        model.addAttribute("totalPages", page.totalPages)
+        model.addAttribute("totalItems", page.totalElements)
+        model.addAttribute("pageSize", pageSize)
+        model.addAttribute("sortBy", sortBy)
+        model.addAttribute("sortDir", sortDir)
+        model.addAttribute("reverseSortDir", if (sortDir == "asc") "desc" else "asc")
+
+        model.addAttribute("users", listUsers) //userService.getPaginatedUsers(pageNo, pageSize,sortBy))
         model.addAttribute("allRoles", roleService.findAllByOrderByName())
         return "admin/list-users"
     }
