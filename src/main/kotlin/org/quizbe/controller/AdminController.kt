@@ -31,7 +31,7 @@ class AdminController @Autowired constructor(
 
     @GetMapping("/users")
     fun showUserList(model: Model): String {
-        return this.getPaginatedUsers(1, 2, "id", "asc", model) // "admin/list-users"
+        return this.getPaginatedUsers(1, 12, "id", "asc", model) // "admin/list-users"
     }
 
     @GetMapping("/users2")
@@ -42,7 +42,7 @@ class AdminController @Autowired constructor(
         @RequestParam(defaultValue = "asc") sortDir : String,
         model: Model): String {
 
-//        val pageSize = 5
+        val pageSize = 12
 
         val page: Page<User> = userService.findPaginated(pageNo, pageSize, sortBy, sortDir)
         val listUsers: List<User> = page.content
