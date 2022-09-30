@@ -68,27 +68,22 @@ class AdminController @Autowired constructor(
         var cptUsers = 0
         roles.add("USER")
         for (user in users) {
-            val userAttrib = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (userAttrib.size < 3) continue
+            val userAttributs = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            if (userAttributs.size < 3) continue
             cptUsers++
-            val userDto = UserDto(userAttrib[0].trim { it <= ' ' },
-                userAttrib[1].trim { it <= ' ' },
-                userAttrib[2].trim { it <= ' ' })
+            val userDto = UserDto(userAttributs[0].trim { it <= ' ' },
+                userAttributs[1].trim { it <= ' ' },
+                userAttributs[2].trim { it <= ' ' })
             userDto.roles = roles
             try {
                 userService.saveUserFromUserDto(userDto)
                 cptNewUser++
             } catch (e: Exception) {
-                logger.warn("""
-    Exception in addUsers : $userDto
-    ${e.message}
-    """.trimIndent()
-                )
-                //
+                logger.warn("Exception in addUsers : $userDto")
             }
         }
         // TODO show users not added
-        redirAttrs.addFlashAttribute("simpleMessage", "$cptNewUser on $cptUsers added")
+        redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "$cptNewUser on $cptUsers added")
         return "redirect:/admin/users"
     }
 
@@ -105,16 +100,16 @@ class AdminController @Autowired constructor(
         val id = request.getParameter("id").toLong()
         val roleName = request.getParameter("rolename")
         val nameCurrentUser = request.userPrincipal.name
-        val currentUser = userService.findByUsername(nameCurrentUser)
-        val userToUpdate = userService.findById(id)
-            .orElseThrow { IllegalArgumentException("Invalid user Id:$id") }
+        val currentUser : User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
+        val userToUpdate : User = userService.findById(id).get()  // throw NoSuchElementException
+
         logger.info("userToUpdate : $userToUpdate")
         logger.info("currentUser : $currentUser")
         logger.info("roleName : $roleName")
 
         // "super admin" stay admin
         if (roleName === "ADMIN") {
-            if ((currentUser!!.id == 1L) && (userToUpdate!!.id == 1L)) {
+            if ((currentUser.id == 1L) && (userToUpdate.id == 1L)) {
                 // Le super utilisateur reste admin !
                 return "redirect:/admin/users"
             }
@@ -126,7 +121,7 @@ class AdminController @Autowired constructor(
         val role = roleService.findByName(roleName) ?: throw IllegalArgumentException("Invalid role name:$roleName")
 
         // boolean userToUpdateIsAdmin = userToUpdate.getRoles().stream().anyMatch(r -> r.getName().equals("ADMIN"));
-        userService.flipflopUserRole(userToUpdate!!, role)
+        userService.flipflopUserRole(userToUpdate, role)
         return "redirect:/admin/users"
     }
 
@@ -165,11 +160,6 @@ class AdminController @Autowired constructor(
         quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "Message being sent to ${user.email}...")
 
-//        if (quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))) {
-//            redirAttrs.addFlashAttribute("successMessage", "email.force.update.pw.message")
-//        } else {
-//            redirAttrs.addFlashAttribute("errorMessage", "email.error.force.update.pw.message")
-//        }
         return "redirect:/admin/users"
     }
 }

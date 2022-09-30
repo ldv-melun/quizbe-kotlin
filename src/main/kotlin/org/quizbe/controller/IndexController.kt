@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 
 @Controller
-class IndexController @Autowired constructor(private val userService: UserService) {
+class IndexController @Autowired constructor(
+    private val userService: UserService,
+    private val passwordDtoValidator: PasswordDtoValidator
+) {
     var logger : Logger = LoggerFactory.getLogger(IndexController::class.java)
-
-    @Autowired
-    private val passwordDtoValidator: PasswordDtoValidator? = null
 
     @GetMapping(value = ["/"])
     fun index(): String {
@@ -49,7 +49,7 @@ class IndexController @Autowired constructor(private val userService: UserServic
    */
     @PreAuthorize("hasRole('CHANGE_PW')")
     @GetMapping("/douser/updatepw")
-    @Throws(ServletException::class)
+//    @Throws(ServletException::class)
     fun showUpdatePassword(@ModelAttribute passwordDto: PasswordDto?, request: HttpServletRequest, model: Model?): String {
         userService.findByUsername(request.userPrincipal.name) ?: throw UserNotFoundException("Invalid User")
         // defensive code
@@ -58,14 +58,13 @@ class IndexController @Autowired constructor(private val userService: UserServic
 
     @PreAuthorize("hasRole('CHANGE_PW')")
     @PostMapping("/douser/updatepw")
-    @Throws(ServletException::class)
-    fun userUpdatePassword(@ModelAttribute passwordDto: @Valid PasswordDto?,
+    fun userUpdatePassword(@ModelAttribute @Valid passwordDto: PasswordDto,
                            result: BindingResult, principal: Principal, request: HttpServletRequest): String {
         val user = userService.findByUsername(principal.name) ?: throw UserNotFoundException("Invalid User")
         if (result.hasErrors()) {
             return "main/update-user-pw"
         }
-        passwordDtoValidator!!.validate(passwordDto!!, result)
+        passwordDtoValidator.validate(passwordDto, result)
         if (result.hasErrors()) {
             return "main/update-user-pw"
         }

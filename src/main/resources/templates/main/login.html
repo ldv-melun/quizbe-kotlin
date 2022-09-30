@@ -34,8 +34,14 @@
 <!--      </label>-->
 <!--    </div>-->
     <button class="w-100 btn btn-lg btn-primary" type="submit" th:text="#{signin}">Sign in</button>
+    <div class="p-2"><p>Only ADMIN can add users</p></div>
+<!--
+/*
     <div class="p-2"><a href="/"><span style="color: red" th:text="#{pw.forbidden}">forbidden password ?</span></a></div>
-    <div class="p-2"><a href="/admin/register"><span th:text="#{user.registration}">registration</span></a></div>
+*/-->
+
+<!--/*    <div class="p-2"><a href="/"><span th:text="#{user.registration}">registration</span></a></div>*/-->
+
   </form>
 </main>
 <div th:replace="fragments/footer.html :: footer"/>
