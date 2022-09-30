@@ -103,6 +103,12 @@ class AdminController @Autowired constructor(
         val currentUser : User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
         val userToUpdate : User = userService.findById(id).get()  // throw NoSuchElementException
 
+
+        val pageNo =  request.getParameter("pageNo") ?: "1"
+        val pageSize =  request.getParameter("pageSize") ?: "10"
+        val sortBy =  request.getParameter("sortBy") ?: "id"
+        val sortDir =  request.getParameter("sortDir") ?: "asc"
+
         logger.info("userToUpdate : $userToUpdate")
         logger.info("currentUser : $currentUser")
         logger.info("roleName : $roleName")
@@ -111,18 +117,18 @@ class AdminController @Autowired constructor(
         if (roleName === "ADMIN") {
             if ((currentUser.id == 1L) && (userToUpdate.id == 1L)) {
                 // Le super utilisateur reste admin !
-                return "redirect:/admin/users"
+                return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
             }
             if (currentUser.id!! > 1L) {
                 // non autorisé à gérer les rôles ADMIN
-                return "redirect:/admin/users"
+                return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
             }
         }
         val role = roleService.findByName(roleName) ?: throw IllegalArgumentException("Invalid role name:$roleName")
 
         // boolean userToUpdateIsAdmin = userToUpdate.getRoles().stream().anyMatch(r -> r.getName().equals("ADMIN"));
         userService.flipflopUserRole(userToUpdate, role)
-        return "redirect:/admin/users"
+        return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
 
     @GetMapping(value = ["/register"])
@@ -149,6 +155,7 @@ class AdminController @Autowired constructor(
             return "/admin/registration"
         }
 
+
         return "redirect:/admin/users"
     }
 
@@ -160,6 +167,11 @@ class AdminController @Autowired constructor(
         quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "Message being sent to ${user.email}...")
 
-        return "redirect:/admin/users"
+        val pageNo =  request.getParameter("pageNo") ?: "1"
+        val pageSize =  request.getParameter("pageSize") ?: "10"
+        val sortBy =  request.getParameter("sortBy") ?: "id"
+        val sortDir =  request.getParameter("sortDir") ?: "asc"
+
+        return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
 }
