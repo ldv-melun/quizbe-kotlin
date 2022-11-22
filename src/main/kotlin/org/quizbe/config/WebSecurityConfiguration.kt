@@ -4,35 +4,43 @@ import org.quizbe.service.CustomUserServiceDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
-class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
-    private val bCryptPasswordEncoder = BCryptPasswordEncoder()
+class WebSecurityConfiguration @Autowired constructor(private val userDetailsService: CustomUserServiceDetails) {
 
-    @Autowired
-    private val userDetailsService: CustomUserServiceDetails? = null
-    @Throws(Exception::class)
-    override fun configure(auth: AuthenticationManagerBuilder) {
-        auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder)
+    @Bean
+    @Throws(java.lang.Exception::class)
+    fun authManager(
+        http: HttpSecurity,
+        bCryptPasswordEncoder: BCryptPasswordEncoder?,
+        userDetailService: CustomUserServiceDetails?
+    ): AuthenticationManager? {
+        return http.getSharedObject(AuthenticationManagerBuilder::class.java)
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(bCryptPasswordEncoder)
+            .and()
+            .build()
     }
 
-    @Throws(Exception::class)
-    override fun configure(http: HttpSecurity) {
+    @Bean
+    @Throws(java.lang.Exception::class)
+    fun filterChain(http: HttpSecurity): SecurityFilterChain? {
         http.authorizeHttpRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
@@ -60,14 +68,25 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
                 .and()
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
         // .exceptionHandling().accessDeniedPage("/access-denied");
+        return http.build()
     }
 
-    @Throws(Exception::class)
-    override fun configure(web: WebSecurity) {
-        web
+    @Bean
+    fun webSecurityCustomizer(): WebSecurityCustomizer? {
+        return WebSecurityCustomizer { web: WebSecurity ->
+            web
                 .ignoring()
-                .antMatchers("/resources/**", "/svg/**", "/images/**", "/static/**", "/css/**", "/js/**", "/images/**, /console/**" +
-                        "")
+                .antMatchers(
+                    "/resources/**",
+                    "/svg/**",
+                    "/images/**",
+                    "/static/**",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**, /console/**" +
+                            ""
+                )
+        }
     }
 
     @Bean
@@ -76,7 +95,7 @@ class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
     }
 
     @Bean
-    public override fun userDetailsService(): UserDetailsService {
+    public  fun userDetailsService(): UserDetailsService {
         return CustomUserServiceDetails()
     }
 

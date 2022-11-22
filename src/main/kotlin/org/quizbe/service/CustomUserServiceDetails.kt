@@ -54,6 +54,7 @@ class CustomUserServiceDetails : UserDetailsService {
                 logger.info("user has password expired, so we set a new default password to him")
                 updateDefaultPlainTextPassword(user)
             }
+            // Dynamic change role with CHANGE_PW (special restrict role, force user to change pw)
             ArrayList<GrantedAuthority>(Arrays.asList(SimpleGrantedAuthority("CHANGE_PW")))
         } else {
             // logger.info("user do no change password");
