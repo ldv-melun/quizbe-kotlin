@@ -186,7 +186,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
             ratingService.delete(userRating)
             redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "delete.ok")
         } else {
-            redirAttrs.addFlashAttribute("errorMessage", "delete.no.ok")
+            redirAttrs.addFlashAttribute(ERROR_MESSAGE, "delete.no.ok")
         }
         return "redirect:/question/play/$idQuestion"
     }

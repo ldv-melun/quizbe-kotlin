@@ -17,7 +17,7 @@ class QuestionDto {
     var name: String =""
 
     @field:NotBlank(message = "{question.sentence.blank}")
-    @field:Size(min = 3, max = 255, message = "{question.sentence.min.max}")
+    @field:Size(min = 3, max = 800, message = "{question.sentence.min.max}")
     var sentence: String = ""
 
     @field:NotBlank(message = "{question.designer.blank}")

@@ -42,6 +42,7 @@ class AdminController @Autowired constructor(
         @RequestParam(defaultValue = "asc") sortDir : String,
         model: Model): String {
 
+        // bad hack, hum...
         val pageSize = 12
 
         val page: Page<User> = userService.findPaginated(pageNo, pageSize, sortBy, sortDir)
@@ -84,15 +85,27 @@ class AdminController @Autowired constructor(
         }
         // TODO show users not added
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "$cptNewUser on $cptUsers added")
-        return "redirect:/admin/users"
+
+        val pageNo =  request.getParameter("pageNo") ?: "1"
+        val pageSize =  request.getParameter("pageSize") ?: "10"
+        val sortBy =  request.getParameter("sortBy") ?: "id"
+        val sortDir =  request.getParameter("sortDir") ?: "asc"
+
+        return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
 
     @GetMapping("/delete/{id}")
-    fun deleteUser(@PathVariable("id") id: Long, model: Model?): String {
+    fun deleteUser(@PathVariable("id") id: Long, model: Model?, request: HttpServletRequest): String {
         val user: User? = userService.findById(id)
             .orElseThrow { IllegalArgumentException("Invalid user Id:$id") }
         user?.let { userService.delete(it) }
-        return "redirect:/admin/users"
+
+        val pageNo =  request.getParameter("pageNo") ?: "1"
+        val pageSize =  request.getParameter("pageSize") ?: "10"
+        val sortBy =  request.getParameter("sortBy") ?: "id"
+        val sortDir =  request.getParameter("sortDir") ?: "asc"
+
+        return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
 
     @PostMapping("/role")
@@ -102,7 +115,6 @@ class AdminController @Autowired constructor(
         val nameCurrentUser = request.userPrincipal.name
         val currentUser : User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
         val userToUpdate : User = userService.findById(id).get()  // throw NoSuchElementException
-
 
         val pageNo =  request.getParameter("pageNo") ?: "1"
         val pageSize =  request.getParameter("pageSize") ?: "10"
@@ -141,7 +153,8 @@ class AdminController @Autowired constructor(
         @ModelAttribute userDto: @Valid UserDto?,
         bindingResult: BindingResult,
         model: Model,
-        redirAttrs: RedirectAttributes
+        redirAttrs: RedirectAttributes,
+        request: HttpServletRequest
     ): String {
         userService.checkAddUpdateUser(userDto!!, bindingResult)
         if (bindingResult.hasErrors()) {
@@ -155,8 +168,12 @@ class AdminController @Autowired constructor(
             return "/admin/registration"
         }
 
+        val pageNo =  request.getParameter("pageNo") ?: "1"
+        val pageSize =  request.getParameter("pageSize") ?: "10"
+        val sortBy =  request.getParameter("sortBy") ?: "id"
+        val sortDir =  request.getParameter("sortDir") ?: "asc"
 
-        return "redirect:/admin/users"
+        return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
 
     @GetMapping(value = ["/resetpw"])

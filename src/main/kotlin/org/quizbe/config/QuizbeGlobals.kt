@@ -14,5 +14,4 @@ class QuizbeGlobals(private val properties: QuizbeProperties) {
         const val SIMPLE_MESSAGE = "simpleMessage"
     }
 
-
 }
