@@ -12,7 +12,7 @@ class Rating {
     @Column(name = "ID", nullable = false)
     var id: Long? = null
 
-    @Basic
+    @Lob
     @Column(nullable = true)
     var comment: String? = null
 

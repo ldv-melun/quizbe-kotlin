@@ -7,7 +7,7 @@ class RatingDto {
 
 
     @field:NotBlank
-    @field:Size(min = 3, max = 200, message = "{play.user.rating.comment.min.max}")
+//    @field:Size(min = 3, max = 500, message = "{play.user.rating.comment.min.max}")
     var comment:  String? = null
 
 

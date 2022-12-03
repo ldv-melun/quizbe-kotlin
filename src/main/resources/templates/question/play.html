@@ -261,13 +261,14 @@
 
 <script th:inline="javascript">
     function checkUserChoice() {
-        let res = 0.0;
+        let res = 0;
         let elts = document.getElementsByClassName("userChoice");
         let i;
         for (i = 0; i < elts.length; i++) {
             if (elts[i].checked == true) {
                 let idValue = "v" + elts[i].id.substring(1);
-                res = res + parseFloat(document.getElementById(idValue).innerHTML);
+                if (parseFloat(document.getElementById(idValue).innerHTML) > 0) res = res + 1; else res = res - 1 // or res = 0
+                // res = res +  parseFloat(document.getElementById(idValue).innerHTML);
             }
         }
         document.getElementById('idFeedBack').hidden = true;
