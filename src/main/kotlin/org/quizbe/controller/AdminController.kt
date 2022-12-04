@@ -86,10 +86,7 @@ class AdminController @Autowired constructor(
         // TODO show users not added
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "$cptNewUser on $cptUsers added")
 
-        val pageNo =  request.getParameter("pageNo") ?: "1"
-        val pageSize =  request.getParameter("pageSize") ?: "10"
-        val sortBy =  request.getParameter("sortBy") ?: "id"
-        val sortDir =  request.getParameter("sortDir") ?: "asc"
+        val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
 
         return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
@@ -116,10 +113,7 @@ class AdminController @Autowired constructor(
         val currentUser : User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
         val userToUpdate : User = userService.findById(id).get()  // throw NoSuchElementException
 
-        val pageNo =  request.getParameter("pageNo") ?: "1"
-        val pageSize =  request.getParameter("pageSize") ?: "10"
-        val sortBy =  request.getParameter("sortBy") ?: "id"
-        val sortDir =  request.getParameter("sortDir") ?: "asc"
+        val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
 
         logger.info("userToUpdate : $userToUpdate")
         logger.info("currentUser : $currentUser")
@@ -168,10 +162,13 @@ class AdminController @Autowired constructor(
             return "/admin/registration"
         }
 
-        val pageNo =  request.getParameter("pageNo") ?: "1"
-        val pageSize =  request.getParameter("pageSize") ?: "10"
-        val sortBy =  request.getParameter("sortBy") ?: "id"
-        val sortDir =  request.getParameter("sortDir") ?: "asc"
+        // remplacer ces 4 lignes en une seule ligne
+//        val pageNo =  request.getParameter("pageNo") ?: "1"
+//        val pageSize =  request.getParameter("pageSize") ?: "10"
+//        val sortBy =  request.getParameter("sortBy") ?: "id"
+//        val sortDir =  request.getParameter("sortDir") ?: "asc"
+
+        val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
 
         return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
@@ -184,10 +181,7 @@ class AdminController @Autowired constructor(
         quizbeEmailService.sendMailAfterSetDefaultPwPlainText(user, Utils.getBaseUrl(request))
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "Message being sent to ${user.email}...")
 
-        val pageNo =  request.getParameter("pageNo") ?: "1"
-        val pageSize =  request.getParameter("pageSize") ?: "10"
-        val sortBy =  request.getParameter("sortBy") ?: "id"
-        val sortDir =  request.getParameter("sortDir") ?: "asc"
+        val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
 
         return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }

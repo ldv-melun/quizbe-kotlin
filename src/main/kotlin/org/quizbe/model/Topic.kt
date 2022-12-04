@@ -52,7 +52,10 @@ class Topic {
     fun getQuestions(scope: Scope?): MutableList<Question> {
         return if (scope == null) {
             questions
-        } else questions.stream().filter { question: Question -> question.scope == scope }.collect(Collectors.toList())
+        } else {
+            val res: MutableList<Question> = questions.stream().filter { question: Question -> question.scope == scope }.sorted { o1, o2 ->  o1.designer.compareTo(o2.designer)}.collect(Collectors.toList())
+            res
+        }
     }
 
     fun addSubscribedr(user: User) {
