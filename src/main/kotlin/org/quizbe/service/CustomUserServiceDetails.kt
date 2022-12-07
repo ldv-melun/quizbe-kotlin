@@ -20,17 +20,10 @@ import java.util.*
 import javax.transaction.Transactional
 
 @Service
-class CustomUserServiceDetails : UserDetailsService {
+class CustomUserServiceDetails @Autowired constructor(
+  private val userRepository : UserRepository,
+  private val quizbeProperties: QuizbeProperties):  UserDetailsService  {
     var logger : Logger = LoggerFactory.getLogger(CustomUserServiceDetails::class.java)
-
-//    private val VALID_HOURS_DEFAULT_PW =  QuizbeProperties().pwLifeTimeHours
-
-    @Autowired
-    lateinit var userRepository : UserRepository
-
-    @Autowired
-    lateinit var quizbeProperties: QuizbeProperties
-
 
     @Transactional
     @Throws(UsernameNotFoundException::class)
@@ -42,6 +35,7 @@ class CustomUserServiceDetails : UserDetailsService {
         if (user == null) {
             user = userRepository.findByUsername(username)
             if (user == null) {
+                logger.info("user not found : $username")
                 throw UsernameNotFoundException("Could not find user")
             }
         }

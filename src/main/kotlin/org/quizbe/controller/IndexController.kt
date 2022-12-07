@@ -40,7 +40,7 @@ class IndexController @Autowired constructor(
      * @See org.quizbe.config.WebSecurityConfiguration
      */
     @GetMapping(value = ["/access-denied"])
-    fun acceDenied(): String {
+    fun accessDenied(): String {
         return "/error/access-denied"
     }
 

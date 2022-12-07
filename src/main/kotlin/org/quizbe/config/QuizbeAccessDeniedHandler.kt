@@ -18,9 +18,9 @@ class QuizbeAccessDeniedHandler : AccessDeniedHandler {
     private val userService: UserService? = null
     @Throws(IOException::class, ServletException::class)
     override fun handle(
-            request: HttpServletRequest,
-            response: HttpServletResponse,
-            exc: AccessDeniedException) {
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        exc: AccessDeniedException) {
         val auth = SecurityContextHolder.getContext().authentication
         if (auth != null) {
             logger.warn("User: " + auth.name

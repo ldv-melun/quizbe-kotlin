@@ -210,6 +210,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         userRating.dateUpdate = LocalDateTime.now()
 
         ratingService.save(userRating)
+        redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful")
 
         // notification by mail to designer
         val designerUser = userService.findByUsername(question.designer)

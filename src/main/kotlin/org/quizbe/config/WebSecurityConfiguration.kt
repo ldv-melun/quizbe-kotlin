@@ -42,31 +42,33 @@ class WebSecurityConfiguration @Autowired constructor(private val userDetailsSer
     @Throws(java.lang.Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain? {
         http.authorizeHttpRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/register").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/error").permitAll() //.antMatchers("/admin/**").permitAll()
-                .antMatchers("/question/**").hasAnyAuthority("USER")
-                .antMatchers("/user/**").hasAuthority("USER")
-                .antMatchers("/douser/**").hasAuthority("CHANGE_PW") //            .antMatchers("/topic/**").hasAuthority("TEACHER")
-                .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
-                .authenticated()
-                .and() //.csrf().disable()
-                .formLogin()
-                .loginPage("/login").failureUrl("/login?error=true")
-                .defaultSuccessUrl("/question?login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .and()
-                .logout()
-                .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID")
-                .and()
-                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+            .antMatchers("/").permitAll()
+            .antMatchers("/login").permitAll()
+            .antMatchers("/access-denied").permitAll()
+            .antMatchers("/register").permitAll()
+            .antMatchers("/webjars/**").permitAll()
+            .antMatchers("/error").permitAll() //.antMatchers("/admin/**").permitAll()
+            .antMatchers("/question/**").hasAnyAuthority("USER")
+            .antMatchers("/user/**").hasAuthority("USER")
+            .antMatchers("/douser/**")
+            .hasAuthority("CHANGE_PW") //            .antMatchers("/topic/**").hasAuthority("TEACHER")
+            .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
+            .authenticated()
+            .and() //.csrf().disable()
+            .formLogin()
+            .loginPage("/login").failureUrl("/login?error=true")
+            .defaultSuccessUrl("/question?login")
+            .usernameParameter("username")
+            .passwordParameter("password")
+            .and()
+            .logout()
+            .logoutRequestMatcher(AntPathRequestMatcher("/logout"))
+            .logoutSuccessUrl("/login")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .deleteCookies("JSESSIONID")
+            .and()
+            .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
         // .exceptionHandling().accessDeniedPage("/access-denied");
         return http.build()
     }
@@ -92,11 +94,6 @@ class WebSecurityConfiguration @Autowired constructor(private val userDetailsSer
     @Bean
     fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
-    }
-
-    @Bean
-    public  fun userDetailsService(): UserDetailsService {
-        return CustomUserServiceDetails()
     }
 
     @Bean

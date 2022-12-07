@@ -20,7 +20,7 @@ class InternationalizationConfig : WebMvcConfigurer {
     @Bean
     open fun localeResolver(): LocaleResolver {
         val cookieLocaleResolver = CookieLocaleResolver()
-        cookieLocaleResolver.cookieMaxAge = 6 * 30 * 24 * 60 * 60 // 6 mois...
+        // cookieLocaleResolver.cookieMaxAge  = 6 * 30 * 24 * 60 * 60 // 6 mois...
         cookieLocaleResolver.setDefaultLocale(Locale.US)
         // called before launching tomcat :
         // logger.info("resolve locale2 : " + cookieLocaleResolver.toString());

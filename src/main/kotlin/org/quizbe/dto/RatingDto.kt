@@ -5,11 +5,8 @@ import javax.validation.constraints.*
 class RatingDto {
     var id: Long? = null
 
-
-    @field:NotBlank
-//    @field:Size(min = 3, max = 500, message = "{play.user.rating.comment.min.max}")
+    @field:Size(min = 2, max = 500, message = "{play.user.rating.comment.min.max}")
     var comment:  String? = null
-
 
     @field:NotNull(message = "{play.user.rating.value}")
     @field:Min(value = 1, message = "{play.user.rating.value}")

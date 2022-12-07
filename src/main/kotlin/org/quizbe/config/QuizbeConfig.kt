@@ -1,18 +1,20 @@
 package org.quizbe.config
 
-import org.quizbe.dao.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 
+
 @Configuration
 class QuizbeConfig : WebMvcConfigurer {
-    var logger : Logger = LoggerFactory.getLogger(QuizbeConfig::class.java)
+    var logger: Logger = LoggerFactory.getLogger(QuizbeConfig::class.java)
 
     @Bean
     fun primaryTemplateResolver(): ClassLoaderTemplateResolver {
@@ -41,12 +43,24 @@ class QuizbeConfig : WebMvcConfigurer {
     //  return tomcat;
     //  }
     //
-    //  @Bean
-    //  public SecurityWebFilterChain securityWebFilterChain(
-    //          ServerHttpSecurity http) {
-    //    return http.authorizeExchange()
-    //            .pathMatchers("/actuator/**").permitAll()
-    //            .anyExchange().authenticated()
-    //            .and().build();
-    //  }
+
+//    @Bean
+//    public SecurityWebFilterChain securityWebFilterChain(
+//    ServerHttpSecurity http)
+//    {
+//        return http.authorizeExchange()
+//            .pathMatchers("/actuator/**").permitAll()
+//            .anyExchange().authenticated()
+//            .and().build();
+//    }
+
+//
+//    @Bean
+//    @Throws(Exception::class)
+//    fun filterChain2(http: HttpSecurity): SecurityFilterChain? {
+////        http.addFilterAfter(CustomFilter(), BasicAuthenticationFilter::class.java)
+//        http.addFilter(CustomFilter())
+//        return http.build()
+//    }
+
 }
