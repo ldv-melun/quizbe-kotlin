@@ -26,6 +26,10 @@
           th:if="${error}" th:text="'('+${error}+')'">error ...</span>
   </p>
 
+  <div th:if="${message}">
+    <p th:text="${message}"> </p>
+  </div>
+
   <p th:text="#{error.message}"> </p>
 
   <p>---</p>
