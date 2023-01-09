@@ -18,4 +18,8 @@ class RoleService @Autowired constructor(var roleRepository: RoleRepository) {
     fun saveRole(role: Role) {
         roleRepository.save(role)
     }
+
+    fun countRole() : Long {
+        return roleRepository.count()
+    }
 }

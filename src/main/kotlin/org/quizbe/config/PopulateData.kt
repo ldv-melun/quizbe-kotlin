@@ -31,10 +31,14 @@ class PopulateData @Autowired constructor(
     private lateinit var teacher: User
     private lateinit var eleve: User
 
+    /**
+     * Injecte des données initiales si la base de données est "vide"
+     */
     @Throws(Exception::class)
     override fun run(args: ApplicationArguments) {
-        val role = roleService.findByName("USER")
-        if (role != null) return
+        if (roleService.countRole() > 0) {
+            return
+        }
         roleService.saveRole(Role("USER"))
         roleService.saveRole(Role("TEACHER"))
         roleService.saveRole(Role("ADMIN"))
