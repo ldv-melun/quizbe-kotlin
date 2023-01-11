@@ -40,6 +40,7 @@
             >-- Choose a scope
             </option>
             <div th:if="${selectedTopic != null}">
+              <option th:value="'/question?id-selected-topic=' + ${selectedTopic.id}" th:text="#{scope.all}" >All Scopes</option>
               <option th:each="scope : ${selectedTopic.scopes}"
                       th:value="'/question?id-selected-topic=' + ${selectedTopic.id} +'&id-selected-scope=' + ${scope.id}"
                       value=""
