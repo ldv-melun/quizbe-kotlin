@@ -103,14 +103,34 @@ class QuestionService @Autowired constructor(private val questionRepository: Que
     fun findById(id: Long): Question {
         return questionRepository.findById(id).orElseThrow { QuestionNotFoundException() }!!
     }
+    fun findPreviousByIdQuestion(idQuestion: Long, scope: Scope): Question? {
+        val idPrevious = questionRepository.findPreviousById(idQuestion, scope)
+//        logger.info("id previous :$idPrevious")
+        return if (idPrevious != null) findById(idPrevious.toLong()) else null
+    }
 
-    fun findNextById(id: Long): Question? {
-        val idNext = questionRepository.findNextById(id)
-        logger.info("id next :$idNext")
+    fun findFirstByScope(scope: Scope): Question? {
+        val idFirst = questionRepository.findFirstByScope(scope)
+//        logger.info("id previous :$idPrevious")
+        return if (idFirst != null) findById(idFirst.toLong()) else null
+    }
+
+    fun findLastByScope(scope: Scope): Question? {
+        val idLast = questionRepository.findLastByScope(scope)
+//        logger.info("id previous :$idPrevious")
+        return if (idLast != null) findById(idLast.toLong()) else null
+    }
+
+    fun findNextByIdQuestion(idQuestion: Long, scope: Scope): Question? {
+        val idNext = questionRepository.findNextById(idQuestion, scope)
+//        logger.info("id next :$idNext")
         return if (idNext != null) findById(idNext.toLong()) else null
     }
 
     fun delete(question: Question) {
         questionRepository.delete(question)
     }
+
+
+
 }

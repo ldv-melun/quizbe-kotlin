@@ -176,11 +176,21 @@
         </form>
 
     </div>
-    </div>
     <div class="container d-flex justify-content-center mt-5 mb-3 text-muted">
         <a th:href="@{'/question?id-selected-topic='+${question.topic.id}+'&id-selected-scope='+${question.scope.id}}"
            th:text="#{back.to.list}"></a>
-        <span>&nbsp;&nbsp; << &nbsp;&nbsp;  >> </span>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${first != null and question.id != first.id}" th:href="@{'/question/play/'+${first.id}}">&lt;&lt;</a>
+        <p th:if="${question.id == first.id}">&lt;&lt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${previous != null}" th:href="@{'/question/play/'+${previous.id}}">&lt;</a>
+        <p th:if="${previous == null}">&lt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${next != null}" th:href="@{'/question/play/'+${next.id}}">&gt;</a>
+        <p th:if="${next == null}">&gt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${last != null and question.id != last.id}" th:href="@{'/question/play/'+${last.id}}">&gt;&gt;</a>
+        <p th:if="${question.id == last.id}">&gt;&gt;</p>
     </div>
 
     <div class="col-7 mb-3">

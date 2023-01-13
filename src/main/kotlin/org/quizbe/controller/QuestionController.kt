@@ -2,6 +2,7 @@ package org.quizbe.controller
 
 import org.quizbe.config.QuizbeGlobals.Constants.ERROR_MESSAGE
 import org.quizbe.config.QuizbeGlobals.Constants.SUCCESS_MESSAGE
+import org.quizbe.dao.QuestionRepository
 import org.quizbe.dto.QuestionDto
 import org.quizbe.dto.RatingDto
 import org.quizbe.exception.ScopeNotFoundException
@@ -23,7 +24,6 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
@@ -32,7 +32,8 @@ import javax.validation.Valid
 
 @RequestMapping("/question")
 @Controller
-class QuestionController @Autowired constructor(private val topicService: TopicService,
+class QuestionController @Autowired constructor(private val questionRepository: QuestionRepository,
+                                                private val topicService: TopicService,
                                                 private val userService: UserService,
                                                 private val scopeService: ScopeService,
                                                 private val questionService: QuestionService,
@@ -144,12 +145,24 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
     }
 
     @GetMapping("/play/{idquest}")
-    fun showPlay(@PathVariable("idquest") idQuestion: Long, ratingDto: RatingDto?,
+    fun showPlay(@PathVariable("idquest") idQuestion: Long,ratingDto: RatingDto?,
                  model: Model, request: HttpServletRequest): String {
         val question = questionService.findById(idQuestion)
+        val scope = question.scope
+        val previous = questionService.findPreviousByIdQuestion(idQuestion,scope)
+        val next = questionService.findNextByIdQuestion(idQuestion, scope)
+        val first = questionService.findFirstByScope(scope)
+        val last = questionService.findLastByScope(scope)
+        logger.info("first : $first")
+        logger.info("last : $last")
+        logger.info("previous : $previous")
+        logger.info("next : $next")
+        model.addAttribute("first", first)
+        model.addAttribute("last", last)
+        model.addAttribute("previous",previous)
+        model.addAttribute("next",next)
         val currentUser = userService.findByUsername(request.userPrincipal.name)
         var userRating = ratingService.getRating(currentUser, question)?.orElse(null)
-
 //    logger.info("in showPlay - 1 question " + question);
 //    logger.info("in showPlay - 1 ratingDto " + ratingDto);
         if (userRating == null) {
@@ -196,7 +209,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
                      result: BindingResult, model: Model,
                      request: HttpServletRequest, redirAttrs: RedirectAttributes): String {
         if (result.hasErrors()) {
-            return showPlay(idQuestion, ratingDto, model, request) //"/question/play";
+            return showPlay(idQuestion,ratingDto, model, request) //"/question/play";
         }
         val question = questionService.findById(idQuestion)
         val currentUser = userService.findByUsername(request.userPrincipal.name)
@@ -254,4 +267,12 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         }
         return "redirect:/question/play/$idQuestion"
     }
+
+
+//    fun nextQuestion(@PathVariable("idquest") idQuestion: Long): Int?{
+//        if(questionRepository.findNextById(idQuestion) != null) {
+//            return questionRepository.findNextById(idQuestion)
+//        }
+//        return null
+//    }
 }
