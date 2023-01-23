@@ -6,6 +6,17 @@
 <body>
 <div th:replace="fragments/header :: menu(activeTab='admin')"/>
 <main class="text-center">
+
+    <div th:if="${param.simpleMessage}" th:text="${param.simpleMessage}" class="alert alert-success"></div>
+    <div th:if="${notAddedUsers != null}" class="alert alert-danger">
+        <strong th:text="#{error.usersNotAdded}"></strong>
+        <ul>
+            <li th:each="notAddedUser : ${notAddedUsers}">
+                <span th:text="${notAddedUser.username}"></span>
+                (<span th:text="${notAddedUser.email}"></span>)
+            </li>
+        </ul>
+    </div>
     <div th:switch="${users}">
         <h2 th:case="null">No users yet!</h2>
         <div th:case="*">
