@@ -15,6 +15,8 @@ class RatingDto {
 
     var outDated = false
 
+    var obsolete = false
+
     constructor() {}
 
     /**
@@ -24,11 +26,12 @@ class RatingDto {
      * @param value
      * @param outDated
      */
-    constructor(id: Long?, comment: String?, value: Int?, outDated: Boolean) {
+    constructor(id: Long?, comment: String?, value: Int?, outDated: Boolean, obsolete : Boolean) {
         this.id = id
         this.comment = comment
         this.value = value
         this.outDated = outDated
+        this.obsolete = obsolete
     }
 
 
