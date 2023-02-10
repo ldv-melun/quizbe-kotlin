@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
+
 interface QuestionRepository : JpaRepository<Question?, Long?> {
+
     @Query("select min(id) from Question where id > :id and scope = :scope")
     fun findNextById(id: Long, scope: Scope): Int?
 

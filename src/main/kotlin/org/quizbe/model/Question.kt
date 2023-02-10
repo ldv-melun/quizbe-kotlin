@@ -29,7 +29,7 @@ class Question {
 
     /// trace de la personne conceptrice et co-conceptrice
     @Basic
-    @Column(name = "DESIGNER", nullable = false, length = 50)
+        @Column(name = "DESIGNER", nullable = false, length = 50)
     lateinit var designer: String
 
     @Basic

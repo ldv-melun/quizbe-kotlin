@@ -116,10 +116,10 @@
       Add a new question
     </a>
 
-    <span class="float-end"><a th:href="@{/todo?message=Export Moodle}" class="btn btn-secondary btn-sm " role="button"
-                               _download="todo-export-quizbe-SIO22-LDV-SLAM-questions-2022/01/12.xml">Export Moodle</a></span>
+    <span class="float-end"><a th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}" class="btn btn-secondary btn-sm" role="button"
+                               _download="" th:classappend="${selectedScope==null} ? 'disabled'">Export Moodle</a>
     <span class="float-end">&nbsp;&nbsp;</span>
-    <span class="float-end"><a th:href="@{/exportRaw(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}" class="btn btn-secondary btn-sm" role="button"
+    <span class="float-end"><a th:href="@{/question/exportRaw(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}" class="btn btn-secondary btn-sm" role="button"
                                _download="" th:classappend="${selectedScope==null} ? 'disabled'">Export RAW</a>
 
   </div>
