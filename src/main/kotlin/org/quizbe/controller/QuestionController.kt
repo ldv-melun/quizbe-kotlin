@@ -163,6 +163,9 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         logger.info("last : $last")
         logger.info("previous : $previous")
         logger.info("next : $next")
+        val ratings = question.ratings
+        for(rating in ratings) logger.info("rating ${rating.id} :  $rating et ${rating.isObsolete}")
+        model.addAttribute("ratings", question.ratings)
         model.addAttribute("first", first)
         model.addAttribute("last", last)
         model.addAttribute("previous",previous)
@@ -184,6 +187,7 @@ class QuestionController @Autowired constructor(private val questionRepository: 
                 ratingDto.value = userRating.value
             }
             ratingDto.outDated = userRating.isOutDated
+            ratingDto.obsolete = userRating.isObsolete
         }
 
 //    logger.info("in showPlay -2 userRating " + userRating);
@@ -226,6 +230,7 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         }
         userRating.comment = ratingDto!!.comment
         userRating.value = ratingDto.value
+        userRating.isObsolete = false
         userRating.dateUpdate = LocalDateTime.now()
 
         ratingService.save(userRating)
@@ -244,6 +249,31 @@ class QuestionController @Autowired constructor(private val questionRepository: 
 //            }
         }
 
+        return "redirect:/question/play/$idQuestion"
+    }
+
+    @GetMapping("/play/{idquest}/update/{idrating}")
+    fun updateRating(
+        @PathVariable("idquest") idQuestion: Long,
+        @PathVariable("idrating") idRating: Long,
+        @Valid @ModelAttribute ratingDto: RatingDto?,
+        result: BindingResult,
+        request: HttpServletRequest,
+        redirAttrs: RedirectAttributes,
+    ): String {
+        val question = questionService.findById(idQuestion)
+        val currentUser = userService.findByUsername(request.userPrincipal.name)
+        val currentRating = ratingService.findById(idRating).get()
+        if (currentUser!!.username != question.designer || !currentRating.isOutDated) {
+            logger.info("NE DOIS PAS PASSER ICI")
+            redirAttrs.addFlashAttribute(ERROR_MESSAGE, "operation.fail")
+            return "redirect:/question/play/$idQuestion"
+        }
+        currentRating.question = question
+        if (currentUser.username == question.designer && !currentRating.isObsolete) currentRating.isObsolete = true
+        ratingDto!!.obsolete = currentRating.isObsolete
+        ratingService.save(currentRating)
+        redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful")
         return "redirect:/question/play/$idQuestion"
     }
 
