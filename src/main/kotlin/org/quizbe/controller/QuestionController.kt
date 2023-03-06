@@ -2,6 +2,8 @@ package org.quizbe.controller
 
 import org.quizbe.config.QuizbeGlobals.Constants.ERROR_MESSAGE
 import org.quizbe.config.QuizbeGlobals.Constants.SUCCESS_MESSAGE
+import org.quizbe.dao.QuestionRepository
+import org.quizbe.dao.TopicRepository
 import org.quizbe.dto.QuestionDto
 import org.quizbe.dto.RatingDto
 import org.quizbe.exception.ScopeNotFoundException
@@ -16,6 +18,9 @@ import org.quizbe.utils.Utils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
@@ -23,7 +28,7 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
@@ -32,12 +37,14 @@ import javax.validation.Valid
 
 @RequestMapping("/question")
 @Controller
-class QuestionController @Autowired constructor(private val topicService: TopicService,
+class QuestionController @Autowired constructor(private val questionRepository: QuestionRepository,
+                                                private val topicService: TopicService,
                                                 private val userService: UserService,
                                                 private val scopeService: ScopeService,
                                                 private val questionService: QuestionService,
                                                 private val ratingService: RatingService,
-                                                private val quizbeEmailService: QuizbeEmailService) {
+                                                private val quizbeEmailService: QuizbeEmailService,
+                                                private val topicRepository: TopicRepository) {
     val logger : Logger = LoggerFactory.getLogger(QuestionController::class.java)
 
 
@@ -144,12 +151,27 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
     }
 
     @GetMapping("/play/{idquest}")
-    fun showPlay(@PathVariable("idquest") idQuestion: Long, ratingDto: RatingDto?,
+    fun showPlay(@PathVariable("idquest") idQuestion: Long,ratingDto: RatingDto?,
                  model: Model, request: HttpServletRequest): String {
         val question = questionService.findById(idQuestion)
+        val scope = question.scope
+        val previous = questionService.findPreviousByIdQuestion(idQuestion,scope)
+        val next = questionService.findNextByIdQuestion(idQuestion, scope)
+        val first = questionService.findFirstByScope(scope)
+        val last = questionService.findLastByScope(scope)
+        logger.info("first : $first")
+        logger.info("last : $last")
+        logger.info("previous : $previous")
+        logger.info("next : $next")
+        val ratings = question.ratings
+        for(rating in ratings) logger.info("rating ${rating.id} :  $rating et ${rating.isObsolete}")
+        model.addAttribute("ratings", question.ratings)
+        model.addAttribute("first", first)
+        model.addAttribute("last", last)
+        model.addAttribute("previous",previous)
+        model.addAttribute("next",next)
         val currentUser = userService.findByUsername(request.userPrincipal.name)
         var userRating = ratingService.getRating(currentUser, question)?.orElse(null)
-
 //    logger.info("in showPlay - 1 question " + question);
 //    logger.info("in showPlay - 1 ratingDto " + ratingDto);
         if (userRating == null) {
@@ -165,6 +187,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
                 ratingDto.value = userRating.value
             }
             ratingDto.outDated = userRating.isOutDated
+            ratingDto.obsolete = userRating.isObsolete
         }
 
 //    logger.info("in showPlay -2 userRating " + userRating);
@@ -196,7 +219,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
                      result: BindingResult, model: Model,
                      request: HttpServletRequest, redirAttrs: RedirectAttributes): String {
         if (result.hasErrors()) {
-            return showPlay(idQuestion, ratingDto, model, request) //"/question/play";
+            return showPlay(idQuestion,ratingDto, model, request) //"/question/play";
         }
         val question = questionService.findById(idQuestion)
         val currentUser = userService.findByUsername(request.userPrincipal.name)
@@ -207,6 +230,7 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         }
         userRating.comment = ratingDto!!.comment
         userRating.value = ratingDto.value
+        userRating.isObsolete = false
         userRating.dateUpdate = LocalDateTime.now()
 
         ratingService.save(userRating)
@@ -225,6 +249,31 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
 //            }
         }
 
+        return "redirect:/question/play/$idQuestion"
+    }
+
+    @GetMapping("/play/{idquest}/update/{idrating}")
+    fun updateRating(
+        @PathVariable("idquest") idQuestion: Long,
+        @PathVariable("idrating") idRating: Long,
+        @Valid @ModelAttribute ratingDto: RatingDto?,
+        result: BindingResult,
+        request: HttpServletRequest,
+        redirAttrs: RedirectAttributes,
+    ): String {
+        val question = questionService.findById(idQuestion)
+        val currentUser = userService.findByUsername(request.userPrincipal.name)
+        val currentRating = ratingService.findById(idRating).get()
+        if (currentUser!!.username != question.designer || !currentRating.isOutDated) {
+            logger.info("NE DOIS PAS PASSER ICI")
+            redirAttrs.addFlashAttribute(ERROR_MESSAGE, "operation.fail")
+            return "redirect:/question/play/$idQuestion"
+        }
+        currentRating.question = question
+        if (currentUser.username == question.designer && !currentRating.isObsolete) currentRating.isObsolete = true
+        ratingDto!!.obsolete = currentRating.isObsolete
+        ratingService.save(currentRating)
+        redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful")
         return "redirect:/question/play/$idQuestion"
     }
 
@@ -254,4 +303,59 @@ class QuestionController @Autowired constructor(private val topicService: TopicS
         }
         return "redirect:/question/play/$idQuestion"
     }
+
+
+    @GetMapping("/exportMoodle")
+    fun exportMoodleQuiz(
+        @RequestParam("idTopic") idTopic: Long,
+        @RequestParam("idScope") idScope: Long,
+        request: HttpServletRequest,
+        model: Model
+    ): ResponseEntity<String> {
+        val questions = questionRepository.findByScopeIdAndTopicId(idScope, idTopic)
+        val build = StringBuilder()
+        build.append("<?xml version='1.0' encoding='UTF-8'?>")
+        build.append("<quiz>")
+        for (question in questions) {
+            build.append(questionService.questionToXMLMoodle(question))
+        }
+        build.append("</quiz>")
+        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
+        val fileName = "export-moodle-quiz-${topic?.name}-${LocalDate.now()}.xml"
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_XML)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
+            .body(build.toString())
+    }
+    @GetMapping("/exportRaw")
+    fun exportRaw(
+        @RequestParam("idTopic") idTopic: Long,
+        @RequestParam("idScope") idScope: Long,
+        request: HttpServletRequest,
+        model: Model
+    ): ResponseEntity<String> {
+        val build = StringBuilder()
+        val questions = questionRepository.findByScopeIdAndTopicId(idScope, idTopic)
+        for (question in questions) {
+            build.append(questionService.questionToTextRaw(question))
+            build.append("\n")
+        }
+
+
+        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
+        val fileName = "export-quizbe-${topic?.name}-${LocalDate.now()}.txt"
+        return ResponseEntity.ok()
+            .contentType(MediaType.TEXT_PLAIN)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
+            .body(build.toString())
+
+    }
+
+
+//    fun nextQuestion(@PathVariable("idquest") idQuestion: Long): Int?{
+//        if(questionRepository.findNextById(idQuestion) != null) {
+//            return questionRepository.findNextById(idQuestion)
+//        }
+//        return null
+//    }
 }

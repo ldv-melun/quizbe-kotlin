@@ -18,14 +18,14 @@ import java.time.LocalDateTime
 @Order(value = 1)
 @Component
 class PopulateData @Autowired constructor(
-    private val userService: UserService,
-    private val roleService: RoleService,
-    private val topicService: TopicService,
-    private val ratingService: RatingService,
-    private val questionService: QuestionService
+        private val userService: UserService,
+        private val roleService: RoleService,
+        private val topicService: TopicService,
+        private val ratingService: RatingService,
+        private val questionService: QuestionService
 ) : ApplicationRunner {
 
-    var logger = LoggerFactory.getLogger(PopulateData::class.java)
+    var logger = LoggerFactory.getLogger(PopulateData::class.java)!!
 
     private lateinit var admin: User
     private lateinit var teacher: User
@@ -95,6 +95,31 @@ class PopulateData @Autowired constructor(
         questionDto.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
         questionDto.responseDtos = responseDtos
         questionService.saveQuestionFromQuestionDto(questionDto)
+        val q1 = QuestionDto(null,topic,2L,admin.username)
+        q1.name = "QuestionTest"
+        q1.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
+        q1.responseDtos = responseDtos
+        questionService.saveQuestionFromQuestionDto(q1)
+        val q2 = QuestionDto(null,topic,1L,admin.username)
+        q2.name = "Question2"
+        q2.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
+        q2.responseDtos = responseDtos
+        questionService.saveQuestionFromQuestionDto(q2)
+        val q3 = QuestionDto(null,topic,2L,admin.username)
+        q3.name = "Question3"
+        q3.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
+        q3.responseDtos = responseDtos
+        questionService.saveQuestionFromQuestionDto(q3)
+        val q4 = QuestionDto(null,topic,1L,admin.username)
+        q4.name = "Question4"
+        q4.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
+        q4.responseDtos = responseDtos
+        questionService.saveQuestionFromQuestionDto(q4)
+        val q5 = QuestionDto(null,topic,2L,admin.username)
+        q5.name = "Question5"
+        q5.sentence = "Answer to the Ultimate Question of Life, the Universe, and Everything"
+        q5.responseDtos = responseDtos
+        questionService.saveQuestionFromQuestionDto(q5)
     }
 
     @Throws(SQLIntegrityConstraintViolationException::class)

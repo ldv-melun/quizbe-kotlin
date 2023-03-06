@@ -30,19 +30,22 @@ class Rating {
     @ManyToOne
     var user: User? = null
 
-    constructor(id: Long?, comment: String?, value: Int?, dateUpdate: LocalDateTime?, question: Question?, user: User?) {
+    constructor(id: Long?, comment: String?, value: Int?, dateUpdate: LocalDateTime?, question: Question?, user: User?, isObsolete: Boolean = false) {
         this.id = id
         this.comment = comment
         this.value = value
         this.dateUpdate = dateUpdate
         this.question = question
         this.user = user
+        this.isObsolete = isObsolete
     }
 
     constructor() {}
 
     val isOutDated: Boolean
         get() = question!!.dateUpdate!!.isAfter(dateUpdate)
+
+    var isObsolete: Boolean = false
 
     override fun equals(o: Any?): Boolean {
         if (this === o) return true

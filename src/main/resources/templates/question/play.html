@@ -143,7 +143,7 @@
                     <i class="fa fa-star" th:classappend="${ratingDto.value >= 4} ? 'rating-color'"></i>
                     <i th:if="${ratingDto.value >= 5}" class="fa fa-smile-beam rating-color"></i>
                     <i th:if="${ratingDto.value < 5}" class="fa fa-star"></i>
-                    <i th:if="${ratingDto.outDated}" class="m-3" aria-hidden="true">
+                    <i th:if="${ratingDto.obsolete}" class="m-3" aria-hidden="true">
                         <span style="font-size: 16px">&nbsp;(</span>
                         <span th:title="#{rating.outdated}" title="a tooltip" class="visible" style="font-size: 16px"
                               th:text="#{obsolete}"></span>
@@ -176,43 +176,66 @@
         </form>
 
     </div>
-    </div>
     <div class="container d-flex justify-content-center mt-5 mb-3 text-muted">
         <a th:href="@{'/question?id-selected-topic='+${question.topic.id}+'&id-selected-scope='+${question.scope.id}}"
            th:text="#{back.to.list}"></a>
-        <span>&nbsp;&nbsp; << &nbsp;&nbsp;  >> </span>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${first != null and question.id != first.id}" th:href="@{'/question/play/'+${first.id}}">&lt;&lt;</a>
+        <p th:if="${question.id == first.id}">&lt;&lt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${previous != null}" th:href="@{'/question/play/'+${previous.id}}">&lt;</a>
+        <p th:if="${previous == null}">&lt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${next != null}" th:href="@{'/question/play/'+${next.id}}">&gt;</a>
+        <p th:if="${next == null}">&gt;</p>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a th:if="${last != null and question.id != last.id}" th:href="@{'/question/play/'+${last.id}}">&gt;&gt;</a>
+        <p th:if="${question.id == last.id}">&gt;&gt;</p>
     </div>
 
     <div class="col-7 mb-3">
         <ul style="list-style-type: none;" id="question-responses">
             <li th:each="rating,iterStat : ${question.ratings}" class="pb-1">
                 <div class="mb-2" th:if="${ratingDto.id != rating.id}">
+                    <div th:if="${rating.outDated and rating.obsolete != true and question.designer == #authentication.getPrincipal().getUsername()}">
+                        <a th:href="@{'/question/play/'+${question.id}+'/update/'+${rating.id}}" th:text="#{set.obsolete}">
+                            Set as obsolete
+                        </a>
+                    </div>
+
                     <!--          other ratings : if user is admin => open a form for update possibility -->
                     <form sec:authorize="hasAuthority('ADMIN')" th:action="@{'/question/userrate/' + ${question.id}}"
                           method="post" th:object="${question}">
-
                         <input type="hidden" th:value="${rating.id}" name="id-rating" class="id-hidden input-reorder">
                         <input type="hidden" th:value="${rating.value}" name="value" class="id-hidden">
-
+                        <!--                        <div th:if="${rating.outDated}">-->
+                        <!--                            -->
+                        <!--                        </div>-->
+<!--                        <i th:text="#{obsolete}" th:title="#{rating.outdated}"-->
+<!--                           title="a tooltip" class="visible"-->
+<!--                           style="font-size: 16px" th:if="${rating.isObsolete()}"></i>-->
                         <div>
                             <label th:for="'comment' + ${iterStat.index}"
                                    th:text="${rating.user.username}">&nbsp;</label>
-                            <i th:if="${rating.outDated}" class="m-3" aria-hidden="true">
-                                ( <span th:text="#{obsolete}" th:title="#{rating.outdated}"
-                title="a tooltip" class="visible" style="font-size: 16px">&nbsp;&nbsp;&nbsp;</span> )
-                            </i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 1} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 2} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 3} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 4} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false and rating.value >= 5}"
+                            <i th:if="${rating.obsolete == false and rating.value >= 5}"
                                class="fa fa-smile-beam rating-color"></i>
-                            <i th:if="${rating.outDated == false and rating.value < 5}" class="fa fa-star"></i>
+                            <i th:if="${rating.obsolete == false and rating.value < 5}" class="fa fa-star"></i>
+                            <i th:if="${rating.outDated}" class="m-3" aria-hidden="true">
+                                <span style="font-size: 16px">&nbsp;</span>
+                                <span th:if="${rating.obsolete}" th:text="#{obsolete}" th:title="#{rating.outdated}" title="a tooltip"
+                                      class="visible" style="font-size: 16px">  </span>
+                                <span style="font-size: 16px"></span>
+                            </i>
                         </div>
+
                         <textarea class="form-control input-reorder" th:id="'comment' + ${iterStat.index}"
                                   name="comment"
                                   th:text="${rating.comment}">
@@ -228,20 +251,20 @@
                         <div>
                             <label th:for="'comment' + ${iterStat.index}"
                                    th:text="${rating.user.username}">:&nbsp;</label>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 1} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 2} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 3} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false}" class="fa fa-star"
+                            <i th:if="${rating.obsolete == false}" class="fa fa-star"
                                th:classappend="${rating.value >= 4} ? 'rating-color'"></i>
-                            <i th:if="${rating.outDated == false and rating.value >= 5}"
+                            <i th:if="${rating.obsolete == false and rating.value >= 5}"
                                class="fa fa-smile-beam rating-color"></i>
-                            <i th:if="${rating.outDated == false and rating.value < 5}" class="fa fa-star"></i>
+                            <i th:if="${rating.obsolete == false and rating.value < 5}" class="fa fa-star"></i>
                             <i th:if="${rating.outDated}" class="m-3" aria-hidden="true">
                                 <span style="font-size: 16px">&nbsp;</span>
-                                <span th:text="#{obsolete}" th:title="#{rating.outdated}" title="a tooltip"
+                                <span th:if="${rating.obsolete}" th:text="#{obsolete}" th:title="#{rating.outdated}" title="a tooltip"
                                       class="visible" style="font-size: 16px">  </span>
                                 <span style="font-size: 16px"></span>
                             </i>

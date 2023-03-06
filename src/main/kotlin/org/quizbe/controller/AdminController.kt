@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpSession
 import javax.validation.Valid
 
 //import javax.validation.Valid
@@ -32,23 +33,30 @@ class AdminController @Autowired constructor(
     var logger: Logger = LoggerFactory.getLogger(AdminController::class.java)
 
     @GetMapping("/users")
-    fun showUserList(model: Model): String {
-        return this.getPaginatedUsers(1, 12, "id", "asc", model) // "admin/list-users"
+    fun showUserList(model: Model,session: HttpSession): String {
+        return this.getPaginatedUsers(1, 12, "id", "asc",model,session) // "admin/list-users"
     }
 
     @GetMapping("/users2")
-    fun getPaginatedUsers(
-        @RequestParam(defaultValue = "0") pageNo : Int,
+        fun getPaginatedUsers(
+        @RequestParam(defaultValue = "0") pageNo: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
-        @RequestParam(defaultValue = "id") sortBy : String,
-        @RequestParam(defaultValue = "asc") sortDir : String,
-        model: Model): String {
+        @RequestParam(defaultValue = "id") sortBy: String,
+        @RequestParam(defaultValue = "asc") sortDir: String,
+        model: Model,
+       session : HttpSession
+    ): String {
 
         // bad hack, hum...
         val pageSize = 12
 
         val page: Page<User> = userService.findPaginated(pageNo, pageSize, sortBy, sortDir)
         val listUsers: List<User> = page.content
+
+        val notAddedUsers: List<UserDto>? = session.getAttribute("notAddedUsers") as List<UserDto>?
+        if(notAddedUsers!=null) {
+            model.addAttribute("notAddedUsers", notAddedUsers)
+        }
 
         model.addAttribute("currentPage", pageNo)
         model.addAttribute("totalPages", page.totalPages)
@@ -57,18 +65,22 @@ class AdminController @Autowired constructor(
         model.addAttribute("sortBy", sortBy)
         model.addAttribute("sortDir", sortDir)
         model.addAttribute("reverseSortDir", if (sortDir == "asc") "desc" else "asc")
-
-        model.addAttribute("users", listUsers) //userService.getPaginatedUsers(pageNo, pageSize,sortBy))
+        model.addAttribute("users", listUsers)//userService.getPaginatedUsers(pageNo, pageSize,sortBy))
         model.addAttribute("allRoles", roleService.findAllByOrderByName())
         return "admin/list-users"
     }
 
     @PostMapping("/addusers")
-    fun addUsers(request: HttpServletRequest, redirAttrs: RedirectAttributes): String {
+    fun addUsers(
+        request: HttpServletRequest,
+        redirAttrs: RedirectAttributes,
+        model: Model
+    ): String {
         val users = request.getParameter("users").split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val roles: MutableSet<String> = HashSet()
         var cptNewUser = 0
         var cptUsers = 0
+        val notAddedUsers = ArrayList<UserDto>()
         roles.add("USER")
         for (user in users) {
             val userAttributs = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -82,10 +94,12 @@ class AdminController @Autowired constructor(
                 userService.saveUserFromUserDto(userDto)
                 cptNewUser++
             } catch (e: Exception) {
+                notAddedUsers.add(userDto)
                 logger.warn("Exception in addUsers : $userDto")
             }
         }
-        // TODO show users not added
+        // show users not added
+        redirAttrs.addFlashAttribute("notAddedUsers", notAddedUsers)
         redirAttrs.addFlashAttribute(QuizbeGlobals.Constants.SIMPLE_MESSAGE, "$cptNewUser on $cptUsers added")
 
         val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
@@ -99,10 +113,10 @@ class AdminController @Autowired constructor(
             .orElseThrow { IllegalArgumentException("Invalid user Id:$id") }
         user?.let { userService.delete(it) }
 
-        val pageNo =  request.getParameter("pageNo") ?: "1"
-        val pageSize =  request.getParameter("pageSize") ?: "10"
-        val sortBy =  request.getParameter("sortBy") ?: "id"
-        val sortDir =  request.getParameter("sortDir") ?: "asc"
+        val pageNo = request.getParameter("pageNo") ?: "1"
+        val pageSize = request.getParameter("pageSize") ?: "10"
+        val sortBy = request.getParameter("sortBy") ?: "id"
+        val sortDir = request.getParameter("sortDir") ?: "asc"
 
         return "redirect:/admin/users2?pageNo=$pageNo&pageSize=$pageSize&sortBy=$sortBy&sortDir=$sortDir"
     }
@@ -112,8 +126,8 @@ class AdminController @Autowired constructor(
         val id = request.getParameter("id").toLong()
         val roleName = request.getParameter("rolename")
         val nameCurrentUser = request.userPrincipal.name
-        val currentUser : User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
-        val userToUpdate : User = userService.findById(id).get()  // throw NoSuchElementException
+        val currentUser: User = userService.findByUsername(nameCurrentUser) ?: throw UserNotFoundException()
+        val userToUpdate: User = userService.findById(id).get()  // throw NoSuchElementException
 
         val (pageNo, pageSize, sortBy, sortDir) = getParamPaginationFromRequest(request)
 
