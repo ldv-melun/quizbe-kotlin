@@ -25,4 +25,6 @@ interface QuestionRepository : JpaRepository<Question?, Long?> {
 
     fun findByScopeIdAndTopicId(scopeId: Long, topicId: Long): List<Question>
 
+    fun findByTopicId(topicId: Long): List<Question>
+
 }

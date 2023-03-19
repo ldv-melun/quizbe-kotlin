@@ -312,7 +312,8 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         request: HttpServletRequest,
         model: Model
     ): ResponseEntity<String> {
-        val questions = questionRepository.findByScopeIdAndTopicId(idScope, idTopic)
+        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
+        val questions = if (idScope > 0) questionRepository.findByScopeIdAndTopicId(idScope, idTopic) else questionRepository.findByTopicId(idTopic)
         val build = StringBuilder()
         build.append("<?xml version='1.0' encoding='UTF-8'?>")
         build.append("<quiz>")
@@ -320,7 +321,7 @@ class QuestionController @Autowired constructor(private val questionRepository: 
             build.append(questionService.questionToXMLMoodle(question))
         }
         build.append("</quiz>")
-        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
+
         val fileName = "export-moodle-quiz-${topic?.name}-${LocalDate.now()}.xml"
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_XML)
@@ -334,15 +335,15 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         request: HttpServletRequest,
         model: Model
     ): ResponseEntity<String> {
+        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
+
         val build = StringBuilder()
-        val questions = questionRepository.findByScopeIdAndTopicId(idScope, idTopic)
+        val questions = if (idScope > 0) questionRepository.findByScopeIdAndTopicId(idScope, idTopic) else questionRepository.findByTopicId(idTopic)
         for (question in questions) {
             build.append(questionService.questionToTextRaw(question))
-            build.append("\n")
+            build.append("\n===================================================\n")
         }
 
-
-        val topic: Topic? = topicRepository.findById(idTopic).orElseThrow { TopicNotFoundException("topic not found") }
         val fileName = "export-quizbe-${topic?.name}-${LocalDate.now()}.txt"
         return ResponseEntity.ok()
             .contentType(MediaType.TEXT_PLAIN)
@@ -350,12 +351,5 @@ class QuestionController @Autowired constructor(private val questionRepository: 
             .body(build.toString())
 
     }
-
-
-//    fun nextQuestion(@PathVariable("idquest") idQuestion: Long): Int?{
-//        if(questionRepository.findNextById(idQuestion) != null) {
-//            return questionRepository.findNextById(idQuestion)
-//        }
-//        return null
-//    }
+    
 }

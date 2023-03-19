@@ -141,7 +141,7 @@ class QuestionService @Autowired constructor(
     fun questionToTextRaw(question: Question?): String {
         val build = StringBuilder()
         if (question != null) {
-            build.append(question.sentence).append(": ").append("\n")
+            build.append(question.sentence).append(": ").append("\n\n")
             val responses = responseRepository.findByQuestion(question)
             if (responses != null) {
                 for (response in responses) {

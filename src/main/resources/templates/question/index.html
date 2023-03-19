@@ -40,7 +40,9 @@
             >-- Choose a scope
             </option>
             <div th:if="${selectedTopic != null}">
-              <option th:value="'/question?id-selected-topic=' + ${selectedTopic.id}" th:text="#{scope.all}" >All Scopes</option>
+              <option th:value="'/question?id-selected-topic=' + ${selectedTopic.id}" th:text="#{scope.all}">All
+                Scopes
+              </option>
               <option th:each="scope : ${selectedTopic.scopes}"
                       th:value="'/question?id-selected-topic=' + ${selectedTopic.id} +'&id-selected-scope=' + ${scope.id}"
                       value=""
@@ -68,10 +70,10 @@
         <tr>
           <th>Name</th>
           <th>Designer(s)</th>
-          <th class="d-none d-lg-table-cell" >Update date</th>
+          <th class="d-none d-lg-table-cell">Update date</th>
           <th>Operations</th>
           <th>Rating</th>
-          <th class="d-none d-lg-table-cell" >Users rating</th>
+          <th class="d-none d-lg-table-cell">Users rating</th>
           <th>Scope</th>
         </tr>
         </thead>
@@ -79,7 +81,9 @@
         <tr th:each="question : ${questions}">
           <td title="" class="public" th:text="${question.name}">analyse-1</td>
           <td th:text="${question.designer}">okpu</td>
-          <td class="d-none d-lg-table-cell" th:text="${#temporals.format(question.dateUpdate, 'dd-MMM-yyyy HH:mm')}">25-09-2022</td>
+          <td class="d-none d-lg-table-cell" th:text="${#temporals.format(question.dateUpdate, 'dd-MMM-yyyy HH:mm')}">
+            25-09-2022
+          </td>
           <td>
             <a th:href="@{/question/play/{id}(id=${question.id})}">play</a>
             <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/edit/' + ${question.id}}">/edit</a>
@@ -115,15 +119,18 @@
        th:text="#{question.new}" class="btn btn-primary btn-sm" role="button">
       Add a new question
     </a>
-
-    <span class="float-end"><a th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}" class="btn btn-secondary btn-sm" role="button"
-                               _download="" th:classappend="${selectedScope==null} ? 'disabled'">Export Moodle</a>
-    <span class="float-end">&nbsp;&nbsp;</span>
-    <span class="float-end"><a th:href="@{/question/exportRaw(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}" class="btn btn-secondary btn-sm" role="button"
-                               _download="" th:classappend="${selectedScope==null} ? 'disabled'">Export RAW</a>
-
+    <div class="float-end">
+       <a
+            th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}"
+            class="btn btn-secondary btn-sm" role="button"
+            _download="" >Export Moodle</a>
+<!--      th:classappend="${selectedScope==null} ? 'disabled'"-->
+      <a
+              th:href="@{/question/exportRaw(idTopic=${selectedTopic!=null?selectedTopic.id:'0'}, idScope=${selectedScope!=null?selectedScope.id:'0'})}"
+              class="btn btn-secondary btn-sm" role="button"
+              _download="" >Export RAW</a>
+    </div>
   </div>
-
 
 </main>
 
