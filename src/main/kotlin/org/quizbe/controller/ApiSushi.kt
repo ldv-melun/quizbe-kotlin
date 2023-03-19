@@ -3,6 +3,7 @@ package org.quizbe.controller
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -42,6 +43,8 @@ class ApiSushi {
         val boxesJsonStr: String = File(fileNameJson).readText(Charsets.UTF_8)
         this.boxesDtoJsonList = mapper.readValue(boxesJsonStr)
     }
+
+    @CrossOrigin
     @GetMapping("/api/boxes")
     fun apiSushi() : ResponseEntity<List<BoxDtoJson>> {
         return ResponseEntity.ok(boxesDtoJsonList)
