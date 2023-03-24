@@ -32,6 +32,7 @@ class AlimentBoxDtoJson (
 }
 
 @RestController
+@CrossOrigin(origins = ["*"])
 @RequestMapping
 class ApiSushi {
 
@@ -44,7 +45,7 @@ class ApiSushi {
         this.boxesDtoJsonList = mapper.readValue(boxesJsonStr)
     }
 
-    @CrossOrigin
+
     @GetMapping("/api/boxes")
     fun apiSushi() : ResponseEntity<List<BoxDtoJson>> {
         return ResponseEntity.ok(boxesDtoJsonList)

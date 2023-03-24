@@ -42,7 +42,7 @@ class WebSecurityConfiguration @Autowired constructor(private val userDetailsSer
     @Throws(java.lang.Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain? {
         http.authorizeHttpRequests()
-            .antMatchers("/api/boxes").permitAll()
+            .antMatchers("/api/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/login").permitAll()
             .antMatchers("/access-denied").permitAll()
