@@ -1,4 +1,4 @@
-# quizbe.org
+# quizbe app
 
 ## Main concepts of tool
 
@@ -12,4 +12,13 @@
 
 Education scope
 
-Open source Licence 
+Default users : @see private fun createUsers() of conf/PopulateData.kt
+
+Default database : H2 in memory (can be change into application.properties)
+
+Free Open Source Licence (TODO) 
+
+Version executable (avril 2023) : [quizbe-0.8.jar](./docs/quizbe-0.8.jar)
+
+`java -jar quizbe-0.8.jar --server.port=8080`
+
