@@ -339,7 +339,16 @@ class QuestionController @Autowired constructor(private val questionRepository: 
 
         val build = StringBuilder()
         val questions = if (idScope > 0) questionRepository.findByScopeIdAndTopicId(idScope, idTopic) else questionRepository.findByTopicId(idTopic)
+        val currentUser = userService.findByUsername(request.userPrincipal.name)
+        var cpt = 0
+        build.append("Quizbe - Export de questions en format texte\n")
+        build.append("Ce fichier contient les questions du thème spécifié au format texte.\n")
+        build.append("Il a été généré le ${LocalDate.now()} par ${currentUser?.username}.\n")
+        build.append("Thème : ${topic?.name}.\n\n")
+        build.append("\n===================================================\n")
         for (question in questions) {
+            cpt++
+            build.append("$cpt : ")
             build.append(questionService.questionToTextRaw(question))
             build.append("\n===================================================\n")
         }
@@ -351,5 +360,5 @@ class QuestionController @Autowired constructor(private val questionRepository: 
             .body(build.toString())
 
     }
-
+    
 }
