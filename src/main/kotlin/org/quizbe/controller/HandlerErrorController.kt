@@ -31,16 +31,10 @@ class HandlerErrorController : ErrorController {
             if (statusCode == 500) {
                 return "error/error-oups"
             }
-            // TODO status or statusCode
-            if (status == HttpStatus.FORBIDDEN) {
+            if (statusCode == 403) {
                 return "error/access-denied"
             }
-
         }
-//     if(statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-//        return "error/error-500";
-//      }
-
         return "error/error-oups"
     }
 }

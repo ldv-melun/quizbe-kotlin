@@ -121,7 +121,7 @@
     </a>
     <div class="float-end">
        <a
-            th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:''}, idScope=${selectedScope!=null?selectedScope.id:''})}"
+            th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:'0'}, idScope=${selectedScope!=null?selectedScope.id:'0'})}"
             class="btn btn-secondary btn-sm" role="button"
             _download="" >Export Moodle</a>
 <!--      th:classappend="${selectedScope==null} ? 'disabled'"-->
