@@ -146,7 +146,7 @@ class QuestionService @Autowired constructor(
             if (responses != null) {
                 for (response in responses) {
                     if (response != null) {
-                        build.append("[ ]").append(response.proposition).append("\n")
+                        build.append("[ ] ").append(response.proposition).append("\n")
                     }
                 }
             }

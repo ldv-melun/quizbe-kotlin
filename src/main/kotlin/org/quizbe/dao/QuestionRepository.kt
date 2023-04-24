@@ -16,7 +16,7 @@ interface QuestionRepository : JpaRepository<Question?, Long?> {
 
     @Query("select max(id) from Question where id < :id and scope = :scope")
     fun findPreviousById(id: Long, scope: Scope): Int?
-    //
+
     @Query("select min(id) from Question where scope = :scope")
     fun findFirstByScope(scope: Scope): Int?
 

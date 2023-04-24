@@ -30,10 +30,12 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
+
 
 @RequestMapping("/question")
 @Controller
@@ -322,7 +324,10 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         }
         build.append("</quiz>")
 
-        val fileName = "export-moodle-quiz-${topic?.name}-${LocalDate.now()}.xml"
+        val formatters = DateTimeFormatter.ofPattern("dd/MM/uuuu:k:m")
+        val dateNow: String = LocalDateTime.now().format(formatters)
+        val fileName = "export-moodle-quiz-${topic?.name}-${dateNow}.xml"
+
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_XML)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
@@ -341,10 +346,13 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         val questions = if (idScope > 0) questionRepository.findByScopeIdAndTopicId(idScope, idTopic) else questionRepository.findByTopicId(idTopic)
         val currentUser = userService.findByUsername(request.userPrincipal.name)
         var cpt = 0
-        build.append("Quizbe - Export de questions en format texte\n")
-        build.append("Ce fichier contient les questions du thème spécifié au format texte.\n")
-        build.append("Il a été généré le ${LocalDate.now()} par ${currentUser?.username}.\n")
-        build.append("Thème : ${topic?.name}.\n\n")
+
+        val formatters = DateTimeFormatter.ofPattern("dd/MM/uuuu:k:m")
+        val dateNow: String = LocalDateTime.now().format(formatters)
+
+        build.append("Quizbe - Export of ${topic?.name}, text format\n")
+        build.append("Date ${dateNow} by ${currentUser?.username}.\n")
+        build.append("\n")
         build.append("\n===================================================\n")
         for (question in questions) {
             cpt++
@@ -353,12 +361,12 @@ class QuestionController @Autowired constructor(private val questionRepository: 
             build.append("\n===================================================\n")
         }
 
-        val fileName = "export-quizbe-${topic?.name}-${LocalDate.now()}.txt"
+        val fileName = "export-quizbe-${topic?.name}-${dateNow}.txt"
         return ResponseEntity.ok()
             .contentType(MediaType.TEXT_PLAIN)
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=$fileName")
             .body(build.toString())
 
     }
-    
+
 }

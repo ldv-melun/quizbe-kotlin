@@ -115,7 +115,7 @@
     </div>
 
     <a th:if="${selectedTopic != null}" href="question/new"
-       th:href="@{/question/new/{idtopic}/{idscope}(idtopic=${selectedTopic!=null?selectedTopic.id:''}, idscope=${selectedScope!=null?selectedScope.id:''})}"
+       th:href="@{/question/new/{idtopic}/{idscope}(idtopic=${selectedTopic!=null?selectedTopic.id:'0'}, idscope=${selectedScope!=null?selectedScope.id:''})}"
        th:text="#{question.new}" class="btn btn-primary btn-sm" role="button">
       Add a new question
     </a>
@@ -123,12 +123,16 @@
        <a
             th:href="@{/question/exportMoodle(idTopic=${selectedTopic!=null?selectedTopic.id:'0'}, idScope=${selectedScope!=null?selectedScope.id:'0'})}"
             class="btn btn-secondary btn-sm" role="button"
-            _download="" >Export Moodle</a>
-<!--      th:classappend="${selectedScope==null} ? 'disabled'"-->
+            _download=""
+            th:classappend="${selectedTopic==null} ? 'disabled'">
+         Export Moodle
+       </a>
+
       <a
               th:href="@{/question/exportRaw(idTopic=${selectedTopic!=null?selectedTopic.id:'0'}, idScope=${selectedScope!=null?selectedScope.id:'0'})}"
               class="btn btn-secondary btn-sm" role="button"
-              _download="" >Export RAW</a>
+              th:classappend="${selectedTopic==null} ? 'disabled'"
+              _download="">Export RAW</a>
     </div>
   </div>
 
