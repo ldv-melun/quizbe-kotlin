@@ -28,7 +28,7 @@
         <table class="table table-striped">
           <thead>
           <th th:with="expectedGoodResponses=${question.getExpectedGoodChoices}">
-            <a onclick="hideShowhelpExpectedGoodResponse();"> Your choice (help)</a>
+            Your choice <a onclick="hideShowhelpExpectedGoodResponse();" href="#" class="pe-auto"> (help)</a>
             <span id="helpExpectedGoodResponse"
                   th:if="${expectedGoodResponses} > 0 and ${expectedGoodResponses} < ${#lists.size(question.responses)}"
                   th:text="' (' + ${expectedGoodResponses} + ' expected)'"
