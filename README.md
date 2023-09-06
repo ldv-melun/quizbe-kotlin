@@ -18,7 +18,7 @@ Default database : H2 in memory (can be change into application.properties)
 
 Free Open Source Licence (TODO) 
 
-Version executable (avril 2023) : [quizbe-0.8.jar](./docs/quizbe-0.8.jar)
+Version executable (avril 2023) : [quizbe-0.8.2.jar](./docs/quizbe-0.8.2.jar)
 
-`java -jar quizbe-0.8.jar --server.port=8080`
+`java -jar quizbe-0.8.2.jar --server.port=8080`
 
