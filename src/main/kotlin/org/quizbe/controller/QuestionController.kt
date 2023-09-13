@@ -318,7 +318,14 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         val questions = if (idScope > 0) questionRepository.findByScopeIdAndTopicId(idScope, idTopic) else questionRepository.findByTopicId(idTopic)
         val build = StringBuilder()
         build.append("<?xml version='1.0' encoding='UTF-8'?>")
-        build.append("<quiz>")
+
+        // add for Pronote XML (realy compatible moodle ?)
+        build.append("<quiz>\n<question type=\"category\">\n<category>")
+        build.append("<text><![CDATA[<infos><name>" + topic!!.name+"</name><answernumbering>123</answernumbering><niveau></niveau><matiere></matiere></infos>]]></text>")
+        build.append("</category>")
+        build.append("</question>")
+        // end add pronote
+
         for (question in questions) {
             build.append(questionService.questionToXMLMoodle(question))
         }
