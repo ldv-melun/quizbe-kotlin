@@ -173,7 +173,7 @@ class QuestionService @Autowired constructor(
             build.append("<text><![CDATA[" + question.name + "]]></text>")
             build.append("</name>")
             build.append("<questiontext format='html'>")
-            build.append("<text><![CDATA[" + question.sentence + "]]></text>")
+            build.append("<text><![CDATA[<pre>" + question.sentence.replace("\n", "<br>") + "</pre>]]></text>")
             build.append("</questiontext>")
             build.append("<externallink/>")
             build.append("<usecase>1</usecase>")
@@ -207,6 +207,7 @@ class QuestionService @Autowired constructor(
                     } else
                         valueToGrade = (response.value!!.toFloat() / sumNegativeValue.toFloat() * -100F)
                 build.append("<answer fraction='")
+                // build.append(String.format("%,2f", valueToGrade))
                 build.append(valueToGrade.toInt())
                 build.append("' format='html'>")
                 build.append("<text><![CDATA[" + response.proposition + "]]></text>")

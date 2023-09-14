@@ -12,13 +12,15 @@
 
 Education scope
 
-Default users : @see private fun createUsers() of conf/PopulateData.kt
+Default users : @see private fun createUsers() in conf/PopulateData.kt
 
 Default database : H2 in memory (can be change into application.properties)
 
 Free Open Source Licence (TODO) 
 
-Version executable (avril 2023) : [quizbe-0.8.2.jar](./docs/quizbe-0.8.2.jar)
+Version executable (septembre 2023) : [quizbe-0.8.4.jar](./docs/quizbe-0.8.4.jar)
 
-`java -jar quizbe-0.8.2.jar --server.port=8080`
+À placer dans un dossier et y placer une copie de `application.properties` pour paramétrer l'application.
+
+Launch : `java -jar quizbe-0.8.4.jar --server.port=8080`
 
