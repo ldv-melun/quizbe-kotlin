@@ -76,7 +76,8 @@ class AdminController @Autowired constructor(
         redirAttrs: RedirectAttributes,
         model: Model
     ): String {
-        val users = request.getParameter("users").split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val users = request.getParameter("users").split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        logger.info("users : " + users)
         val roles: MutableSet<String> = HashSet()
         var cptNewUser = 0
         var cptUsers = 0

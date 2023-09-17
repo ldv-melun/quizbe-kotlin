@@ -15,6 +15,7 @@ class HandlerErrorController : ErrorController {
     var logger = LoggerFactory.getLogger(HandlerErrorController::class.java)
     @RequestMapping("/access-denied")
     fun handleErrorAccess(request: HttpServletRequest?, model: Model?): String {
+        logger.info("Access denied by " + (request?.remoteAddr ?: "??" ))
         return "error/access-denied"
     }
 

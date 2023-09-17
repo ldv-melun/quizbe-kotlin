@@ -51,26 +51,25 @@
   </div>
 </main>
 <main class="text-center">
-  <div class="form-signin">
+  <div class="col-md-8 mx-auto" style="max-width:50%">
   <h2 class="h3 mb-3 fw-normal">Add users</h2>
-  <div class="form-signin">
-  <form th:action="@{/admin/addusers}" method="post">
-    <div class="form-floating">
-      <textarea   rows="20" cols="60"
+
+  <form class="text-align" th:action="@{/admin/addusers}" method="post">
+    <div class="form-add-users">
+      <textarea   rows="20" cols="120"
              placeholder="username, email, pw" class="form-control" name="users" id="users">
       </textarea>
       <label for="users" >username, email, pw</label>
-
-      <!-- Prevent implicit submission of the form -->
     </div>
+      <!-- Prevent implicit submission of the form -->
+
     <button type="submit" disabled style="display: none" aria-hidden="true"></button>
     <div class="form-floating p-2">
       <span class="p-1"><a href="/login" th:text="#{cancel}">Retour</a></span>
       <button type="submit" class="btn btn-primary btn-block p-2" th:text="#{submit}">Register User</button>
     </div>
   </form>
-  </div>
-  </div>
+    </div>
 </main>
 <div th:replace="fragments/footer.html :: footer"/>
 </body>

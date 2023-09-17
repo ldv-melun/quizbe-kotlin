@@ -32,7 +32,7 @@ class QuizbeAccessDeniedHandler : AccessDeniedHandler {
                 return
             }
         } else {
-            logger.info("Access denied to " + request.requestURI)
+            logger.info("Access denied to " + request.requestURI + " by " +  request.remoteAddr.toString())
         }
         response.sendRedirect(request.contextPath + "/access-denied")
     }
