@@ -41,7 +41,10 @@ class UserServiceImpl(
                 val updateUser = user.get()
                 updateUser.email = userDto.email
                 updateUser.username = userDto.username
-                updateUser.password = bCryptPasswordEncoder.encode(userDto.password)
+                // si le mot de passe n'est pas renseigné, on conserve celui en place
+                if (!userDto.password.isEmpty()) {
+                    updateUser.password = bCryptPasswordEncoder.encode(userDto.password)
+                }
                 try {
                     userRepository.save(updateUser)
                 } catch (e: Exception) {

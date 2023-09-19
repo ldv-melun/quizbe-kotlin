@@ -242,18 +242,16 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         val designerUser = userService.findByUsername(question.designer)
         if (designerUser != null) {
             // an async call
-            quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))
-
-//            if (quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, Utils.getBaseUrl(request))) {
-//                redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful");
-//            } else {
-//                redirAttrs.addFlashAttribute(ERROR_MESSAGE, "email.error.force.update.pw.message")
-//            }
+            quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, userRating.comment!!, Utils.getBaseUrl(request))
         }
 
         return "redirect:/question/play/$idQuestion"
     }
 
+
+    /*
+      set rating as obsolete ?
+     */
     @GetMapping("/play/{idquest}/update/{idrating}")
     fun updateRating(
         @PathVariable("idquest") idQuestion: Long,

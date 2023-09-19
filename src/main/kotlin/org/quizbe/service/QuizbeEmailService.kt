@@ -52,11 +52,10 @@ class QuizbeEmailService @Autowired constructor(private val emailSender: JavaMai
 
 
     @Async
-    fun sendMailToDesignerAfterCreteOrUpdateRating(designerUser: User, question: Question, baseUrl: String) { //}: Boolean {
+    fun sendMailToDesignerAfterCreteOrUpdateRating(designerUser: User, question: Question, comment: String, baseUrl: String) { //}: Boolean {
 
-        val messageEmailBody = "A new comment is coming for your quiz \" ${question.name} \" on " +
-                "<a href=\"" + baseUrl + "\"> url app</a>"
-        this.sendSimpleMessage(designerUser.email, "New or Update comment", messageEmailBody)
+        val messageEmailBody = "A new comment is coming for your question quiz : \" ${question.name} \" on " +
+                "<a href=\"" + baseUrl + "\">" + "quizbe" + "</a>" + "\n<br><p>" + comment + "</p>"
 
         try {
             this.sendSimpleMessage(designerUser.email, "New or Update comment", messageEmailBody)
