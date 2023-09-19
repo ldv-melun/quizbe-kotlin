@@ -11,65 +11,65 @@
 
 <main class="text-center">
   <div class="form-signin">
-  <form autocomplete="off" th:action="@{/admin/register}"
-        th:object="${userDto}" method="post"
-        class="form-signin">
+    <form autocomplete="off" th:action="@{/admin/register}"
+          th:object="${userDto}" method="post"
+          class="form-signin">
 
-    <div class="mb-4 ml-4">
-      <span>&nbsp;&nbsp;&nbsp;</span>
-      <img th:src="@{/svg/quizbe.svg}" alt="logo" width="72" height="57"/>
-    </div>
-    <h1 class="h3 mb-3 fw-normal" th:text="#{user.add}">Add user</h1>
-    <div class="form-floating m-2">
-      <input type="text" th:field="*{username}" placeholder="User Name"
-             class="form-control" id="usename"/>
-      <label for="useName" th:text="#{username}">Username</label>
-      <p
-              th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-              class="validation-message"></p>
-    </div>
-    <div class="form-floating m-2">
-      <input type="text" th:field="*{email}" placeholder="Email"
-             class="form-control" id="email"/>
-      <label for="email" th:text="#{email}">Email address</label>
-      <p
-              th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-              class="validation-message"></p>
-    </div>
-    <div class="form-signin">
-      <input type="password" th:field="*{password}"
-             placeholder="Password" class="form-control" id="password"/>
-      <label for="password" th:text="#{password}">Password</label>
-      <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-             class="validation-message"></p>
-    </div>
-    <div class="form-floating">
-      <span class="p-1"><a href="/login" th:text="#{cancel}">Retour</a></span>
-      <button type="submit" class="btn btn-primary btn-block" th:text="#{submit}">Register User</button>
-    </div>
-  </form>
+      <div class="mb-4 ml-4">
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <img th:src="@{/svg/quizbe.svg}" alt="logo" width="72" height="57"/>
+      </div>
+      <h1 class="h3 mb-3 fw-normal" th:text="#{user.add}">Add user</h1>
+      <div class="form-floating m-2">
+        <input type="text" th:field="*{username}" placeholder="User Name"
+               class="form-control" id="usename"/>
+        <label for="useName" th:text="#{username}">Username</label>
+        <p
+                th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+                class="validation-message"></p>
+      </div>
+      <div class="form-floating m-2">
+        <input type="text" th:field="*{email}" placeholder="Email"
+               class="form-control" id="email"/>
+        <label for="email" th:text="#{email}">Email address</label>
+        <p
+                th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                class="validation-message"></p>
+      </div>
+      <div class="form-signin">
+        <input type="password" th:field="*{password}"
+               placeholder="Password" class="form-control" id="password"/>
+        <label for="password" th:text="#{password}">Password</label>
+        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+           class="validation-message"></p>
+      </div>
+      <div class="form-floating">
+        <span class="p-1"><a href="/login" th:text="#{cancel}">Retour</a></span>
+        <button type="submit" class="btn btn-primary btn-block" th:text="#{submit}">Register User</button>
+      </div>
+    </form>
   </div>
 </main>
 <main class="text-center">
   <div class="col-md-8 mx-auto" style="max-width:50%">
-  <h2 class="h3 mb-3 fw-normal">Add users</h2>
+    <h2 class="h3 mb-3 fw-normal">Add users</h2>
 
-  <form class="text-align" th:action="@{/admin/addusers}" method="post">
-    <div class="form-add-users">
-      <textarea   rows="20" cols="120"
-             placeholder="username, email, pw" class="form-control" name="users" id="users">
+    <form class="text-align" th:action="@{/admin/addusers}" method="post">
+      <div class="form-add-users">
+      <textarea rows="20" cols="120"
+                placeholder="username, email" class="form-control" name="users" id="users">
       </textarea>
-      <label for="users" >username, email, pw</label>
-    </div>
+        <label for="users">username, email</label>
+      </div>
       <!-- Prevent implicit submission of the form -->
 
-    <button type="submit" disabled style="display: none" aria-hidden="true"></button>
-    <div class="form-floating p-2">
-      <span class="p-1"><a href="/login" th:text="#{cancel}">Retour</a></span>
-      <button type="submit" class="btn btn-primary btn-block p-2" th:text="#{submit}">Register User</button>
-    </div>
-  </form>
-    </div>
+      <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+      <div class="form-floating p-2">
+        <span class="p-1"><a href="/login" th:text="#{cancel}">Retour</a></span>
+        <button type="submit" class="btn btn-primary btn-block p-2" th:text="#{submit}">Register User</button>
+      </div>
+    </form>
+  </div>
 </main>
 <div th:replace="fragments/footer.html :: footer"/>
 </body>

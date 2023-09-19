@@ -70,6 +70,11 @@ class AdminController @Autowired constructor(
         return "admin/list-users"
     }
 
+    /**
+     * Ajout des utilisateurs en lot
+     * users : string de la forme: nom, email\nnom, email\n etc.
+     * L'admin devra activer le mot de pass par defaut afin que les utilisateurs reçoivent le mail de chgt de pw
+     */
     @PostMapping("/addusers")
     fun addUsers(
         request: HttpServletRequest,
@@ -85,11 +90,11 @@ class AdminController @Autowired constructor(
         roles.add("USER")
         for (user in users) {
             val userAttributs = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (userAttributs.size < 3) continue
+            if (userAttributs.size < 2) continue
             cptUsers++
             val userDto = UserDto(userAttributs[0].trim { it <= ' ' },
                 userAttributs[1].trim { it <= ' ' },
-                userAttributs[2].trim { it <= ' ' })
+                "")
             userDto.roles = roles
             try {
                 userService.saveUserFromUserDto(userDto)

@@ -12,7 +12,9 @@
 
 Education scope
 
-Default users : @see private fun createUsers() in conf/PopulateData.kt
+Default users/pw : `admin/adminadmin` `prof/profprof`, `eleve/eleveeleve`
+
+@see private fun createUsers() in conf/PopulateData.kt
 
 Default database : H2 in memory (can be change into application.properties)
 
