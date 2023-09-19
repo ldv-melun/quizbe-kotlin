@@ -12,7 +12,7 @@
 
 Education scope
 
-Default users/pw : `admin/adminadmin` `prof/profprof`, `eleve/eleveeleve`
+Default users/pw : `admin/adminadmin`, `prof/profprof`, `eleve/eleveeleve`
 
 @see private fun createUsers() in conf/PopulateData.kt
 
