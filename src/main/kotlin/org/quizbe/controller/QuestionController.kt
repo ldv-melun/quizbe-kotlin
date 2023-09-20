@@ -28,7 +28,6 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -242,7 +241,7 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         val designerUser = userService.findByUsername(question.designer)
         if (designerUser != null) {
             // an async call
-            quizbeEmailService.sendMailToDesignerAfterCreteOrUpdateRating(designerUser, question, userRating.comment!!, Utils.getBaseUrl(request))
+            quizbeEmailService.sendMailToDesignerAfterCreateOrUpdateRating(designerUser, question, userRating.comment!!, Utils.getBaseUrl(request))
         }
 
         return "redirect:/question/play/$idQuestion"
@@ -270,7 +269,13 @@ class QuestionController @Autowired constructor(private val questionRepository: 
             return "redirect:/question/play/$idQuestion"
         }
         currentRating.question = question
-        if (currentUser.username == question.designer && !currentRating.isObsolete) currentRating.isObsolete = true
+        if (currentUser.username == question.designer && !currentRating.isObsolete) {
+            currentRating.isObsolete = true
+            // an async call
+            if (currentRating?.user?.email != null) {
+                quizbeEmailService.sendMailToUserRatingAfterObsolete(currentRating, Utils.getBaseUrl(request))
+            }
+        }
         ratingDto!!.obsolete = currentRating.isObsolete
         ratingService.save(currentRating)
         redirAttrs.addFlashAttribute(SUCCESS_MESSAGE, "operation.successful")
