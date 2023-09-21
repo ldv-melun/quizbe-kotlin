@@ -51,7 +51,7 @@ class QuizbeEmailService @Autowired constructor(private val emailSender: JavaMai
     @Async
     fun sendMailToDesignerAfterCreateOrUpdateRating(designerUser: User, question: Question, comment: String, baseUrl: String) { //}: Boolean {
         val messageEmailBody = "A new comment is coming for your question quiz in ref to topic : ${question.topic.name}[scope: ${question.scope.name}] : \" ${question.name} \" on " +
-                "<a href=\"" + baseUrl + "\">" + "Quizbe" + "</a>" + "\n<br><p>" + comment + "</p>"
+                "<a href=\"${baseUrl}/question/play/${question?.id}\">Quizbe</a>" + "\n<br><p>" + comment + "</p>"
         try {
             this.sendSimpleMessage(designerUser.email, "New or Update comment", messageEmailBody)
         } catch (e: Exception) {
@@ -62,8 +62,8 @@ class QuizbeEmailService @Autowired constructor(private val emailSender: JavaMai
     @Async
     fun sendMailToUserRatingAfterObsolete(rating: Rating, baseUrl: String) {
         val messageEmailBody = "Your rating is now Obsolete, in ref to topic : ${rating.question?.topic?.name}[scope: ${rating.question?.scope?.name}](${rating.question?.name}) on " +
-                "<a href=\"" + baseUrl + "\">" + "Quizbe" + "</a>" + "\n" +
-                "<br><p> Your comment : " + rating.comment + "</p>"
+                "<a href=\"${baseUrl}/question/play/${rating.question?.id}\">Quizbe</a>" + "\n" +
+                "<p> Your comment : " + rating.comment + "</p>"
         try {
             this.sendSimpleMessage(rating.user?.email+"", "Your rating is obsolete", messageEmailBody)
         } catch (e: Exception) {

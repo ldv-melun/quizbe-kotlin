@@ -87,7 +87,7 @@
           <td>
             <a th:href="@{/question/play/{id}(id=${question.id})}">play</a>
             <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/edit/' + ${question.id}}">/edit</a>
-            <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/delete/' + ${question.id}}">/delete</a>
+            <a th:if="${currentUser.canWrite(question)}" th:href="@{'/question/delete/' + ${question.id}}" class="confirmation">/delete</a>
           </td>
           <td th:with="rating=${question.avgRatings}">
             <div class="small-ratings">
@@ -139,6 +139,18 @@
 </main>
 
 <div th:replace="fragments/footer.html :: footer"/>
+
+<!--https://stackoverflow.com/questions/10462839/how-to-display-a-confirmation-dialog-when-clicking-an-a-link-->
+
+<script type="text/javascript">
+  var elems = document.getElementsByClassName('confirmation');
+  var confirmIt = function (e) {
+    if (!confirm('Are you sure you want to delete ?')) e.preventDefault();
+  };
+  for (var i = 0, l = elems.length; i < l; i++) {
+    elems[i].addEventListener('click', confirmIt, false);
+  }
+</script>
 
 </body>
 </html>

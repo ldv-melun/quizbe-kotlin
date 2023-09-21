@@ -62,7 +62,7 @@
                     <td th:text="${user.username}"></td>
                     <td th:text="${user.email}"></td>
                     <td><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>
-                    <td><a th:href="@{delete/{id}(id=${user.id})}">Delete</a></td>
+                    <td><a th:href="@{delete/{id}(id=${user.id})}" class="confirmation">Delete</a></td>
                     <td>
                         <form th:action="@{/admin/role}" th:each="role : ${allRoles}" method="post"
                               style="display:inline-block"
@@ -134,5 +134,18 @@
     </div>
 </main>
 <div th:replace="fragments/footer.html :: footer"/>
+
+<!--https://stackoverflow.com/questions/10462839/how-to-display-a-confirmation-dialog-when-clicking-an-a-link-->
+
+<script type="text/javascript">
+    var elems = document.getElementsByClassName('confirmation');
+    var confirmIt = function (e) {
+        if (!confirm('Are you sure you want to delete ?')) e.preventDefault();
+    };
+    for (var i = 0, l = elems.length; i < l; i++) {
+        elems[i].addEventListener('click', confirmIt, false);
+    }
+</script>
+
 </body>
 </html>

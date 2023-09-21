@@ -120,8 +120,13 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         }
 
         questionService.saveQuestionFromQuestionDto(questionDto)
-        return ("redirect:/question/index?id-selected-topic=" + questionDto.topic!!.id
-                + "&id-selected-scope=" + questionDto.idScope)
+
+        if (questionDto.id == null) {
+            return ("redirect:/question/index?id-selected-topic=" + questionDto.topic!!.id
+                    + "&id-selected-scope=" + questionDto.idScope)
+        } else {
+            return "redirect:/question/play/${questionDto.id}"
+        }
     }
 
     @GetMapping("/delete/{id}")
