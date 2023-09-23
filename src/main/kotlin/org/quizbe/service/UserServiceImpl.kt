@@ -217,9 +217,31 @@ class UserServiceImpl(
             else
                 Sort.by(sortField).descending()
 
-        val pageable: Pageable = PageRequest.of(pageNo - 1, pageSize, sort)
+        val pageable: Pageable = PageRequest.of(pageNo, pageSize, sort)
         return this.userRepository.findAll(pageable)
     }
+    override fun findByUsernameLike(usernameLike: String, pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User> {
+        val sort =
+            if (sortDirection.equals(Sort.Direction.ASC.name, ignoreCase = true))
+                Sort.by(sortField).ascending()
+            else
+                Sort.by(sortField).descending()
 
+        val pageable: Pageable = PageRequest.of(pageNo, pageSize, sort)
+
+        return this.userRepository.findByUsernameWithPagination(usernameLike, pageable)
+    }
+
+    override fun findByRole(role: String, pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User> {
+        val sort =
+            if (sortDirection.equals(Sort.Direction.ASC.name, ignoreCase = true))
+                Sort.by(sortField).ascending()
+            else
+                Sort.by(sortField).descending()
+
+        val pageable: Pageable = PageRequest.of(pageNo, pageSize, sort)
+
+        return this.userRepository.findByRoleWithPagination(role, pageable)
+    }
 
 }

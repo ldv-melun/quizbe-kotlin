@@ -4,6 +4,7 @@ import org.quizbe.dto.UserDto
 import org.quizbe.model.Role
 import org.quizbe.model.User
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.validation.BindingResult
 import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
@@ -26,4 +27,6 @@ interface UserService {
     fun getPaginatedUsers(pageNo: Int = 0, pageSize: Int = 10, sortBy: String = "id"): List<User>
     fun findPaginated(pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User>
 
+    fun findByUsernameLike(userNameLike: String, pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User>
+    fun findByRole(role: String, pageNo: Int, pageSize: Int, sortField: String, sortDirection: String): Page<User>
 }

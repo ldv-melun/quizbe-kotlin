@@ -33,18 +33,18 @@ class AdminController @Autowired constructor(
     var logger: Logger = LoggerFactory.getLogger(AdminController::class.java)
 
     @GetMapping("/users")
-    fun showUserList(model: Model,session: HttpSession): String {
-        return this.getPaginatedUsers(1, 12, "id", "asc",model,session) // "admin/list-users"
+    fun showUserList(model: Model, session: HttpSession): String {
+        return this.getPaginatedUsers(1, 12, "id", "asc", model, session) // "admin/list-users"
     }
 
     @GetMapping("/users2")
-        fun getPaginatedUsers(
+    fun getPaginatedUsers(
         @RequestParam(defaultValue = "0") pageNo: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(defaultValue = "id") sortBy: String,
         @RequestParam(defaultValue = "asc") sortDir: String,
         model: Model,
-       session : HttpSession
+        session: HttpSession
     ): String {
 
         // bad hack, hum...
@@ -54,8 +54,9 @@ class AdminController @Autowired constructor(
         val listUsers: List<User> = page.content
 
         val notAddedUsers: List<UserDto>? = session.getAttribute("notAddedUsers") as List<UserDto>?
-        if(notAddedUsers!=null) {
+        if (notAddedUsers != null) {
             model.addAttribute("notAddedUsers", notAddedUsers)
+            session.removeAttribute("notAddedUsers") // add by kpu (n'ayant pas vu ou cela est réalisé... TODO vérifier tout cela
         }
 
         model.addAttribute("currentPage", pageNo)
@@ -69,6 +70,45 @@ class AdminController @Autowired constructor(
         model.addAttribute("allRoles", roleService.findAllByOrderByName())
         return "admin/list-users"
     }
+
+
+    @GetMapping("/users-like-name")
+    fun getPaginatedUsersLikeName(
+        @RequestParam(defaultValue = "") search: String,
+        @RequestParam(defaultValue = "0") pageNo: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int,
+        @RequestParam(defaultValue = "id") sortBy: String,
+        @RequestParam(defaultValue = "asc") sortDir: String,
+        model: Model,
+        session: HttpSession
+    ): String {
+
+        // bad hack, hum...
+        val pageSize = 12
+
+        val roles: List<String>? = roleService.findAllByOrderByName()?.map { it!!.name ?: "" }
+
+        val findRole: Boolean = roles?.find { it == search } != null
+
+        val page: Page<User> = if (findRole) userService.findByRole(search, pageNo, pageSize, sortBy, sortDir)
+        else userService.findByUsernameLike(search, pageNo, pageSize, sortBy, sortDir)
+
+        val listUsers: List<User> = if (!page.isEmpty) page.content else {
+            userService.findPaginated(pageNo, pageSize, sortBy, sortDir).content
+        }
+
+        model.addAttribute("currentPage", pageNo)
+        model.addAttribute("totalPages", page.totalPages)
+        model.addAttribute("totalItems", page.totalElements)
+        model.addAttribute("pageSize", pageSize)
+        model.addAttribute("sortBy", sortBy)
+        model.addAttribute("sortDir", sortDir)
+        model.addAttribute("reverseSortDir", if (sortDir == "asc") "desc" else "asc")
+        model.addAttribute("users", listUsers)//userService.getPaginatedUsers(pageNo, pageSize,sortBy))
+        model.addAttribute("allRoles", roleService.findAllByOrderByName())
+        return "admin/list-users"
+    }
+
 
     /**
      * Ajout des utilisateurs en lot
@@ -92,9 +132,11 @@ class AdminController @Autowired constructor(
             val userAttributs = user.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             if (userAttributs.size < 2) continue
             cptUsers++
-            val userDto = UserDto(userAttributs[0].trim { it <= ' ' },
+            val userDto = UserDto(
+                userAttributs[0].trim { it <= ' ' },
                 userAttributs[1].trim { it <= ' ' },
-                "")
+                ""
+            )
             userDto.roles = roles
             try {
                 userService.saveUserFromUserDto(userDto)

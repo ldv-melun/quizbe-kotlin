@@ -7,7 +7,6 @@
     <meta name="author" content="">
 
     <!-- Favicons -->
-    <!--<link rel="apple-touch-icon" th:href="@{/apple-touch-icon.png}">-->
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 
     <title th:text="${title ?: 'QuizBe'}"></title>
@@ -64,6 +63,15 @@
             <a class="nav-link" th:href="@{/admin/users}">Admin</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
+          <li sec:authorize="hasAuthority('ADMIN')" >
+            <form class="d-flex" role="search" th:action="@{/admin/users-like-name}">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" th:name="search">
+              <button style="display: none" class="btn btn-outline-success" type="submit">Search</button>
+              <input type="hidden"
+                     th:name="${_csrf.parameterName}"
+                     th:value="${_csrf.token}" />
+            </form>
+          </li>
           <!--        <li> <span class="nav-link" th:text="${'>' + #request.requestURI} + '<'"></span> <a th:href="@{'/changelocale/?lang=us&url=' + ${#request.requestURI}}">LocaleUS</a> </li>-->
           <!--        <li> <span class="nav-link" th:text="${'>' + #request.requestURI} + '<'"></span> <a th:href="@{'/changelocale/?lang=fr&url=' + ${#request.requestURI}}">LocaleFR</a> </li>-->
           <li sec:authorize="isAuthenticated()" class="nav-link">
@@ -78,9 +86,10 @@
             </svg>
             <a style="color: rgba(255,255,255,.55);" th:href="@{/logout}">&nbsp;Logout </a> (<a
                   th:href="@{/user/edit/}"><span th:text="${#authentication.getPrincipal().getUsername()}"></span></a>)
-            <!--          <a style="color: rgba(255,255,255,.55);" th:href="@{/logout}">&nbsp;Logout </a> (<span th:text="${#authentication.getPrincipal().getUsername()}"></span>)-->
           </li>
+
         </ul>
+
       </div>
     </div>
   </nav>
