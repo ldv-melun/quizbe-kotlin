@@ -15,6 +15,6 @@ interface UserRepository : PagingAndSortingRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', ?1,'%'))")
     fun findByUsernameWithPagination(name: String, pageable: Pageable): Page<User>
 
-    @Query("SELECT u.* FROM USERQ u WHERE u.ID IN (SELECT ur.USER_ID FROM USER_ROLES ur WHERE ur.ROLE_ID IN (SELECT r.ID FROM ROLE r WHERE r.NAME = ?1))", nativeQuery = true)
+    @Query("SELECT u.* FROM userq u WHERE u.id IN (SELECT ur.user_id FROM user_roles ur WHERE ur.role_id IN (SELECT r.id FROM role r WHERE r.name = ?1))", nativeQuery = true)
     fun findByRoleWithPagination(role: String, pageable: Pageable): Page<User>
 }

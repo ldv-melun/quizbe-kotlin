@@ -93,9 +93,10 @@ class AdminController @Autowired constructor(
         val page: Page<User> = if (findRole) userService.findByRole(search, pageNo, pageSize, sortBy, sortDir)
         else userService.findByUsernameLike(search, pageNo, pageSize, sortBy, sortDir)
 
-        val listUsers: List<User> = if (!page.isEmpty) page.content else {
+        /*val listUsers: List<User> = if (!page.isEmpty) page.content else {
             userService.findPaginated(pageNo, pageSize, sortBy, sortDir).content
-        }
+        }*/
+        val listUsers: List<User> =  page.content
 
         model.addAttribute("currentPage", pageNo)
         model.addAttribute("totalPages", page.totalPages)
