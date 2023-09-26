@@ -13,8 +13,8 @@ class Rating {
     var id: Long? = null
 
     @Lob
-    @Column(nullable = true)
-    var comment: String? = null
+    @Column(nullable = false)
+    var comment: String = ""
 
     @Basic
     @Column(name = "VALUERATING", nullable = false)
@@ -32,7 +32,7 @@ class Rating {
 
     constructor(id: Long?, comment: String?, value: Int?, dateUpdate: LocalDateTime?, question: Question?, user: User?, isObsolete: Boolean = false) {
         this.id = id
-        this.comment = comment
+        this.comment = comment ?: ""
         this.value = value
         this.dateUpdate = dateUpdate
         this.question = question

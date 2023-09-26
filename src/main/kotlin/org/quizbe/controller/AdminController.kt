@@ -39,7 +39,7 @@ class AdminController @Autowired constructor(
 
     @GetMapping("/users2")
     fun getPaginatedUsers(
-        @RequestParam(defaultValue = "0") pageNo: Int,
+        @RequestParam(defaultValue = "1") pageNo: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(defaultValue = "id") sortBy: String,
         @RequestParam(defaultValue = "asc") sortDir: String,
@@ -50,7 +50,9 @@ class AdminController @Autowired constructor(
         // bad hack, hum...
         val pageSize = 12
 
-        val page: Page<User> = userService.findPaginated(pageNo, pageSize, sortBy, sortDir)
+        val pageNumero : Int = if (pageNo > 0) pageNo else  1
+
+        val page: Page<User> = userService.findPaginated(pageNumero - 1, pageSize, sortBy, sortDir)
         val listUsers: List<User> = page.content
 
         val notAddedUsers: List<UserDto>? = session.getAttribute("notAddedUsers") as List<UserDto>?
@@ -75,7 +77,7 @@ class AdminController @Autowired constructor(
     @GetMapping("/users-like-name")
     fun getPaginatedUsersLikeName(
         @RequestParam(defaultValue = "") search: String,
-        @RequestParam(defaultValue = "0") pageNo: Int,
+        @RequestParam(defaultValue = "1") pageNo: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
         @RequestParam(defaultValue = "id") sortBy: String,
         @RequestParam(defaultValue = "asc") sortDir: String,
@@ -88,14 +90,18 @@ class AdminController @Autowired constructor(
 
         val roles: List<String>? = roleService.findAllByOrderByName()?.map { it!!.name ?: "" }
 
-        val findRole: Boolean = roles?.find { it == search } != null
+        // si la valeur de search est le nom d'un rôle, alors on recherchera tous les users ayant ce rôle
+        val maybeRoleName = search.trim().uppercase()
+        val findRole: Boolean = roles?.find { maybeRoleName == it  } != null
 
-        val page: Page<User> = if (findRole) userService.findByRole(search, pageNo, pageSize, sortBy, sortDir)
-        else userService.findByUsernameLike(search, pageNo, pageSize, sortBy, sortDir)
+        val pageNumero : Int = if (pageNo > 0) pageNo else  1
 
-        /*val listUsers: List<User> = if (!page.isEmpty) page.content else {
-            userService.findPaginated(pageNo, pageSize, sortBy, sortDir).content
-        }*/
+        val page: Page<User> =
+            if (findRole)
+              userService.findByRole(maybeRoleName, pageNumero - 1, pageSize, sortBy, sortDir)
+            else
+              userService.findByUsernameLike(search, pageNumero - 1, pageSize, sortBy, sortDir)
+
         val listUsers: List<User> =  page.content
 
         model.addAttribute("currentPage", pageNo)

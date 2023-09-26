@@ -5,8 +5,8 @@ import javax.validation.constraints.*
 class RatingDto {
     var id: Long? = null
 
-    @field:Size(min = 2, max = 500, message = "{play.user.rating.comment.min.max}")
-    var comment:  String? = null
+    @field:Size(min = 0, max = 500, message = "{play.user.rating.comment.min.max}")
+    var comment:  String = ""
 
     @field:NotNull(message = "{play.user.rating.value}")
     @field:Min(value = 1, message = "{play.user.rating.value}")
@@ -28,7 +28,7 @@ class RatingDto {
      */
     constructor(id: Long?, comment: String?, value: Int?, outDated: Boolean, obsolete : Boolean) {
         this.id = id
-        this.comment = comment
+        this.comment = comment ?: ""
         this.value = value
         this.outDated = outDated
         this.obsolete = obsolete
@@ -58,7 +58,7 @@ class RatingDto {
 
     override fun hashCode(): Int {
         var result = id?.hashCode() ?: 0
-        result = 31 * result + (comment?.hashCode() ?: 0)
+        result = 31 * result + (comment.hashCode() ?: 0)
         result = 31 * result + (value ?: 0)
         return result
     }

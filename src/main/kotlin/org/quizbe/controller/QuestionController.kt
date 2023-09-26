@@ -165,12 +165,14 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         val next = questionService.findNextByIdQuestion(idQuestion, scope)
         val first = questionService.findFirstByScope(scope)
         val last = questionService.findLastByScope(scope)
+/*
         logger.info("first : $first")
         logger.info("last : $last")
         logger.info("previous : $previous")
         logger.info("next : $next")
+*/
         val ratings = question.ratings
-        for(rating in ratings) logger.info("rating ${rating.id} :  $rating et ${rating.isObsolete}")
+//        for(rating in ratings) logger.info("rating ${rating.id} :  $rating et ${rating.isObsolete}")
         model.addAttribute("ratings", question.ratings)
         model.addAttribute("first", first)
         model.addAttribute("last", last)
@@ -185,10 +187,9 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         } else {
             // existing user rating
             ratingDto!!.id = userRating.id
-            // is user being updated his rating ?
-            if (ratingDto.comment == null) {
-                ratingDto.comment = userRating.comment
-            }
+
+            ratingDto.comment = userRating.comment
+
             if (ratingDto.value == null || ratingDto.value == 0) {
                 ratingDto.value = userRating.value
             }

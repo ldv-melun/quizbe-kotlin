@@ -65,7 +65,7 @@
         <ul class="nav navbar-nav navbar-right">
           <li sec:authorize="hasAuthority('ADMIN')" >
             <form class="d-flex" role="search" th:action="@{/admin/users-like-name}">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" th:name="search">
+              <input class="form-control me-2" type="search" placeholder="username or role" aria-label="Search" th:name="search">
               <button style="display: none" class="btn btn-outline-success" type="submit">Search</button>
               <input type="hidden"
                      th:name="${_csrf.parameterName}"

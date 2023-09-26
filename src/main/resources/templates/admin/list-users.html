@@ -17,9 +17,9 @@
             </li>
         </ul>
     </div>
-    <div th:switch="${users}">
-        <h2 th:case="null">No users yet!</h2>
-        <div th:case="*">
+    <h2 th:if="${#lists.size(users) == 0}">No found users !</h2>
+    <div th:if="${#lists.size(users) > 0}">
+        <div>
             <h2 th:text="#{users}">Users</h2>
             <table class="table table-striped">
                 <thead>

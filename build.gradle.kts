@@ -24,7 +24,7 @@ repositories {
 }
 
 group = "org.quizbe"
-version = "0.8.5"
+version = "0.8.6"
 description = "quizbe"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
