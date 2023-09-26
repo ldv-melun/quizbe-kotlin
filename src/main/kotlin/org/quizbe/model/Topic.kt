@@ -1,5 +1,6 @@
 package org.quizbe.model
 
+import org.quizbe.utils.Utils
 import java.util.stream.Collectors
 import javax.persistence.*
 
@@ -16,7 +17,7 @@ class Topic {
     var name: String? = null
 
     @Basic
-    @Column(name = "VISIBLE" , nullable = false)
+    @Column(name = "VISIBLE", nullable = false)
     var isVisible = true
 
     @OneToMany(mappedBy = "topic", cascade = [CascadeType.ALL])
@@ -29,9 +30,11 @@ class Topic {
     var creator: User? = null
 
     @ManyToMany(cascade = [CascadeType.PERSIST], fetch = FetchType.EAGER)
-    @JoinTable(name = "USER_TOPICS",
+    @JoinTable(
+        name = "USER_TOPICS",
         joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "TOPIC_ID", referencedColumnName = "id")])
+        inverseJoinColumns = [JoinColumn(name = "TOPIC_ID", referencedColumnName = "id")]
+    )
     var subscribers = mutableSetOf<User>()
 
     fun getScopes(): MutableList<Scope> {
@@ -49,12 +52,20 @@ class Topic {
         this.scopes.clear();
     }
 
-    fun getQuestions(scope: Scope?): MutableList<Question> {
+    fun getQuestions(scope: Scope?, sortBy: String, orderBy: String): MutableList<Question> {
+        val comparator =
+            when (sortBy) {
+                "name" -> if (orderBy == "desc") Utils::compareByNameDesc else Utils::compareByNameAsc
+                "designer" -> if (orderBy == "desc") Utils::compareByDesignerDesc else Utils::compareByDesignerAsc
+                "date-update" -> if (orderBy == "desc") Utils::compareByUpdateDateDesc else Utils::compareByUpdateDateAsc
+                "scope" -> if (orderBy == "desc") Utils::compareByScopeDesc else Utils::compareByScopeAsc
+                else -> if (orderBy == "desc") Utils::compareByDesignerDesc else Utils::compareByDesignerAsc
+            }
         return if (scope == null) {
-            questions
+            questions.stream().sorted(comparator).collect(Collectors.toList())
         } else {
-            val res: MutableList<Question> = questions.stream().filter { question: Question -> question.scope == scope }.sorted { o1, o2 ->  o1.designer.compareTo(o2.designer)}.collect(Collectors.toList())
-            res
+            questions.stream().filter { question: Question -> question.scope == scope }.sorted(comparator)
+                .collect(Collectors.toList())
         }
     }
 

@@ -24,10 +24,9 @@ repositories {
 }
 
 group = "org.quizbe"
-version = "0.8.6"
+version = "0.8.8"
 description = "quizbe"
 java.sourceCompatibility = JavaVersion.VERSION_17
-
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -49,7 +48,6 @@ dependencies {
     // https://docs.spring.io/spring-boot/docs/2.7.1/reference/html/configuration-metadata.html#appendix.configuration-metadata.annotation-processor
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-//    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
@@ -59,14 +57,12 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
     testImplementation("com.ninja-squad:springmockk:3.1.1")
-//    testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.3")
-//    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.10")
 
     implementation("com.google.guava:guava:31.1-jre")
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity5")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+//    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -76,8 +72,6 @@ dependencies {
     implementation("org.webjars:font-awesome:6.1.2")
     implementation("org.springframework.security:spring-security-config:5.7.3")
     implementation("org.springframework.security:spring-security-web:5.7.3")
-
-
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10")
 

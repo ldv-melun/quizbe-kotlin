@@ -50,7 +50,10 @@ class QuestionController @Autowired constructor(private val questionRepository: 
 
 
     @GetMapping(value = ["/index", "/", ""])
-    fun questions(model: Model, request: HttpServletRequest): String {
+    fun questions(model: Model,
+                  request: HttpServletRequest,
+                  @RequestParam(defaultValue = "designer") sortby: String,
+                  @RequestParam(defaultValue = "asc") orderby: String): String {
         val currentUser = userService.findByUsername(request.userPrincipal.name) ?: throw UserNotFoundException()
         val idSelectedTopic = request.getParameter("id-selected-topic")
         val idSelectedScope = request.getParameter("id-selected-scope")
@@ -83,7 +86,7 @@ class QuestionController @Autowired constructor(private val questionRepository: 
                     selectedScope = scopeService.findById(idScope)
                             .orElseThrow { ScopeNotFoundException("Invalid id : $idSelectedScope") }
                 }
-                questions = selectedTopic.getQuestions(selectedScope)
+                questions = selectedTopic.getQuestions(selectedScope, sortby, orderby)
             }
         }
         model.addAttribute("currentUser", currentUser)
@@ -91,6 +94,8 @@ class QuestionController @Autowired constructor(private val questionRepository: 
         model.addAttribute("selectedTopic", selectedTopic)
         model.addAttribute("selectedScope", selectedScope)
         model.addAttribute("questions", questions)
+        model.addAttribute("sortby", sortby)
+        model.addAttribute("orderby", orderby)
         // TODO placer dans la session de l'utilisateur (ou autre ?) la liste des ids des questions sélectionnées
         // afin de permettre la navigation dans la vue "play"
         return "/question/index"
