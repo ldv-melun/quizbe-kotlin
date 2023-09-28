@@ -74,8 +74,8 @@ class AdminController @Autowired constructor(
     }
 
 
-    @GetMapping("/users-like-name")
-    fun getPaginatedUsersLikeName(
+    @GetMapping("/users-search")
+    fun getPaginatedUsersSearch(
         @RequestParam(defaultValue = "") search: String,
         @RequestParam(defaultValue = "1") pageNo: Int,
         @RequestParam(defaultValue = "10") pageSize: Int,
@@ -85,10 +85,14 @@ class AdminController @Autowired constructor(
         session: HttpSession
     ): String {
 
-        // bad hack, hum...
+        // bad hack, hum... TODO set pageSize in a range
         val pageSize = 12
 
-        val roles: List<String>? = roleService.findAllByOrderByName()?.map { it!!.name ?: "" }
+        // Select all roles minus "USER" (if USER in roles, get a bug with mysql when cal findByRole).
+        // So as all users are "USER"... empty search is same action
+        val roles: List<String>? =
+            roleService.findAllByOrderByName()?.filterNotNull()!!.filter { it.name != "USER" }.map { it.name.toString() }
+//        logger.info("Roles : " + roles.toString())
 
         // si la valeur de search est le nom d'un rôle, alors on recherchera tous les users ayant ce rôle
         val maybeRoleName = search.trim().uppercase()
