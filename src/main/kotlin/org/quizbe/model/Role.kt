@@ -3,7 +3,7 @@ package org.quizbe.model
 import javax.persistence.*
 
 @Entity
-@Table(name = "ROLE")
+@Table(name = "role")
 class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

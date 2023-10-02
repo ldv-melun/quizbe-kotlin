@@ -4,24 +4,24 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "RESPONSE")
+@Table(name = "response")
 class Response {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "id", nullable = false)
     var id: Long? = null
 
     @Basic
-    @Column(name = "PROPOSITION", nullable = false)
+    @Column(name = "proposition", nullable = false)
     var proposition: String? = null
 
     @Basic
-    @Column(name = "FEEDBACK", nullable = false)
+    @Column(name = "feedback", nullable = false)
     var feedback: String? = null
 
     // VALUE is a reserved word in h2, so VALUEQ (or force quoted column name...)
     @Basic
-    @Column(name = "VALUEQ", nullable = false)
+    @Column(name = "valueq", nullable = false)
     var value: Int? = null
 
     @ManyToOne

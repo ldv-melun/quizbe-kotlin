@@ -10,7 +10,7 @@ import java.util.stream.Collectors
 import javax.persistence.*
 
 @Entity
-@Table(name = "USERQ")
+@Table(name = "userq")
 class User {
     @Transient
     var logger : Logger = LoggerFactory.getLogger(User::class.java)
@@ -22,17 +22,20 @@ class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    @Column(name = "USERNAME", unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     lateinit var username: String
 
-    @Column(name = "EMAIL", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     lateinit var email: String
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "password", nullable = false)
     lateinit var password: String
 
-    @Column(name = "ACTIVE")
+    @Column(name = "active")
     var isEnabled: Boolean = true
+
+    @Basic
+    var dateCreateUser: LocalDateTime = LocalDateTime.now()
 
     @Basic
     var dateUpdatePassword: LocalDateTime? = null
@@ -44,7 +47,7 @@ class User {
     var defaultPlainTextPassword: String? = null
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE])
-    @JoinTable(name = "USER_ROLES", joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "ROLE_ID", referencedColumnName = "id")])
+    @JoinTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
     var roles = mutableSetOf<Role>()
 
 //    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribers", cascade = [CascadeType.ALL])
@@ -73,13 +76,13 @@ class User {
         return subscribedTopics.contains(topic)
     }
 
-
     val visibleTopics: List<Topic>
         get() = topics.stream().filter { topic: Topic -> topic.isVisible }.collect(Collectors.toList())
 
     override fun toString(): String {
         return "User{" +
                 "id=" + id +
+                ", dateCreate=" + dateCreateUser.toString() +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +

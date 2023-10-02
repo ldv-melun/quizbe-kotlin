@@ -4,15 +4,15 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "SCOPE")
+@Table(name = "scope")
 class Scope {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "id", nullable = false)
     var id: Long? = null
 
     @Basic
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     lateinit var name: String
 
     @ManyToOne(fetch = FetchType.LAZY)

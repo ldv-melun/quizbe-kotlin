@@ -54,7 +54,7 @@ class AdminController @Autowired constructor(
 
         val page: Page<User> = userService.findPaginated(pageNumero - 1, pageSize, sortBy, sortDir)
         val listUsers: List<User> = page.content
-
+        logger.info("User first : " + listUsers.get(0))
         val notAddedUsers: List<UserDto>? = session.getAttribute("notAddedUsers") as List<UserDto>?
         if (notAddedUsers != null) {
             model.addAttribute("notAddedUsers", notAddedUsers)

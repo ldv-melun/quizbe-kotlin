@@ -5,19 +5,19 @@ import java.util.stream.Collectors
 import javax.persistence.*
 
 @Entity
-@Table(name = "TOPIC")
+@Table(name = "topic")
 class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "id", nullable = false)
     var id: Long = 0
 
     @Basic
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     var name: String? = null
 
     @Basic
-    @Column(name = "VISIBLE", nullable = false)
+    @Column(name = "visible", nullable = false)
     var isVisible = true
 
     @OneToMany(mappedBy = "topic", cascade = [CascadeType.ALL])
@@ -31,9 +31,9 @@ class Topic {
 
     @ManyToMany(cascade = [CascadeType.PERSIST], fetch = FetchType.EAGER)
     @JoinTable(
-        name = "USER_TOPICS",
-        joinColumns = [JoinColumn(name = "USER_ID", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "TOPIC_ID", referencedColumnName = "id")]
+        name = "user_topics",
+        joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "topic_id", referencedColumnName = "id")]
     )
     var subscribers = mutableSetOf<User>()
 

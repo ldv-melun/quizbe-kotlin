@@ -32,6 +32,11 @@
                     <th>
                         <a th:href="@{'/admin/users2?pageNo='
                             + ${currentPage}+'&pageSize='+${pageSize}
+                            +'&sortBy=dateCreateUser&sortDir='+${reverseSortDir}}">DateCrea</a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/admin/users2?pageNo='
+                            + ${currentPage}+'&pageSize='+${pageSize}
                             +'&sortBy=username&sortDir='+${reverseSortDir}}">Name</a>
                     </th>
                     <th>
@@ -54,6 +59,9 @@
                 <tbody>
                 <tr th:each="user : ${users}">
                     <td th:text="${user.id}"></td>
+                    <td th:text="${user.dateCreateUser} ? ${#temporals.format(user.dateCreateUser, 'dd-MMM-yyyy HH:mm')}">
+
+                    </td>
                     <td th:text="${user.username}"></td>
                     <td th:text="${user.email}"></td>
                     <td><a th:href="@{/user/edit/{id}(id=${user.id})}">Edit</a></td>

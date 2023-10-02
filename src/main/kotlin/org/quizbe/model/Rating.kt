@@ -5,11 +5,11 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "RATING", uniqueConstraints = [UniqueConstraint(columnNames = ["question_id", "user_id"])])
+@Table(name = "rating", uniqueConstraints = [UniqueConstraint(columnNames = ["question_id", "user_id"])])
 class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "id", nullable = false)
     var id: Long? = null
 
     @Lob
@@ -17,7 +17,7 @@ class Rating {
     var comment: String = ""
 
     @Basic
-    @Column(name = "VALUERATING", nullable = false)
+    @Column(name = "valuerating", nullable = false)
     var value: Int? = null
 
     @Basic

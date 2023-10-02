@@ -79,6 +79,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-maven-allopen:1.7.10")
 //    runtimeOnly("org.springframework.boot:spring-boot-devtools:2.7.3")
 
+    // https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-java8time
+    implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
+
 }
 
 tasks.withType<KotlinCompile> {

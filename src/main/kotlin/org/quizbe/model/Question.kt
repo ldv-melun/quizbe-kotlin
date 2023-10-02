@@ -8,19 +8,19 @@ import javax.persistence.*
 // see https://thorben-janssen.com/dynamic-inserts-and-updates-with-spring-data-jpa/
 // https://stackoverflow.com/questions/21721818/why-does-not-hibernate-set-dynamicinsert-by-default
 // Question may be updated frequently (Response also, to test before :)
-@Table(name = "QUESTION")
+@Table(name = "question")
 class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "id", nullable = false)
     var id: Long = 0
 
     @Basic
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     lateinit var name: String
 
     @Lob
-    @Column(name = "SENTENCE", nullable = false)
+    @Column(name = "sentence", nullable = false)
     lateinit var sentence: String
 
     @Basic
@@ -29,11 +29,11 @@ class Question {
 
     /// trace de la personne conceptrice et co-conceptrice
     @Basic
-        @Column(name = "DESIGNER", nullable = false, length = 50)
+        @Column(name = "designer", nullable = false, length = 50)
     lateinit var designer: String
 
     @Basic
-    @Column(name = "CODESIGNER", nullable = false, length = 50)
+    @Column(name = "codesigner", nullable = false, length = 50)
     var codesigner: String = ""
 
     @Basic
